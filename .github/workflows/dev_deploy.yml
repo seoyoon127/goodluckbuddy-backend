@@ -1,0 +1,39 @@
+name: GoodluckBuddy Dev CI/CD
+
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+
+    steps:
+      - uses: actions/checkout@v3  # 저장소 코드 체크아웃
+
+      - name: Set up JDK 21  # Java 개발 킷 설정
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Make application.properties  # application.properties 파일 생성
+        run: |
+          cd ./src/main/resources
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./application.properties
+        shell: bash
+
+      - name: Grant execute permission for gradlew  # gradlew 실행 권한 부여
+        run: chmod +x gradlew
+
+      - name: Build with Gradle  # Gradle을 사용하여 프로젝트 빌드
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
+
+      - name: Upload build artifact  # 빌드된 아티팩트 업로드
+        uses: actions/upload-artifact@v3
+        with:
+          name: GoodluckBuddy_server
+          path: build/libs/*.jar
