@@ -7,6 +7,7 @@ import com.goodluck_buddy.domain.user.entity.User;
 import com.goodluck_buddy.domain.user.exception.UserException;
 import com.goodluck_buddy.domain.user.exception.code.UserErrorCode;
 import com.goodluck_buddy.domain.user.repository.UserRepository;
+import com.goodluck_buddy.global.jwt.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.Duration;
 
 @Component
 @RequiredArgsConstructor
@@ -32,6 +34,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
 
         TokenDto.Tokens tokenDto = tokenService.issueTokens(user);
+        CookieUtil.addCookie(response, "refreshToken", tokenDto.getRefreshToken(), (int) Duration.ofDays(1).toSeconds());
 
         response.sendRedirect(
                 "http://localhost:3000/oauth/success?token=" + tokenDto.getAccessToken()
