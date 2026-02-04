@@ -27,7 +27,6 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/swagger-resources/**",
             "/v3/api-docs/**",
-            "/login/oauth2/**",
             "/api/auth/**",
     };
 
@@ -49,7 +48,6 @@ public class SecurityConfig {
                                     }
                                     """);
                         }))
-                // 폼로그인 비활성화
                 .formLogin(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)

@@ -10,7 +10,13 @@ import org.springframework.http.HttpStatus;
 public enum UserErrorCode implements BaseErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND,
             "USER404",
-            "해당 사용자를 찾지 못했습니다.");
+            "해당 사용자를 찾지 못했습니다."),
+    DUPLICATE_USER(HttpStatus.BAD_REQUEST,
+            "USER400_1",
+            "이미 존재하는 닉네임입니다."),
+    PROFILE_SAVE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR,
+            "USER500_1",
+            "프로필 저장에 실패했습니다.");
 
     private final HttpStatus status;
     private final String code;
