@@ -20,6 +20,10 @@ public class OAuth2UserInfoFactory {
     }
 
     private static SocialType toSocialType(String registrationId) {
-        return SocialType.valueOf(registrationId.toUpperCase());
+        try {
+            return SocialType.valueOf(registrationId.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new AuthException(AuthErrorCode.INVALID_SOCIAL_TYPE);
+        }
     }
 }
