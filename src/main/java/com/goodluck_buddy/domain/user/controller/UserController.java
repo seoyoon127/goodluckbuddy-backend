@@ -1,0 +1,28 @@
+package com.goodluck_buddy.domain.user.controller;
+
+import com.goodluck_buddy.domain.user.dto.UserReqDto;
+import com.goodluck_buddy.domain.user.exception.code.UserSuccessCode;
+import com.goodluck_buddy.domain.user.service.UserService;
+import com.goodluck_buddy.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/users")
+@Tag(name = "User", description = "회원정보 관련 API")
+public class UserController implements UserControllerDocs {
+
+    private final UserService userService;
+
+    @PostMapping("/nickname")
+    public ApiResponse<Void> checkNickname(@Valid @RequestBody UserReqDto.Nickname dto) {
+        userService.checkNickname(dto.getNickname());
+        return ApiResponse.onSuccess(UserSuccessCode.VALID_NICKNAME, null);
+    }
+}
