@@ -7,7 +7,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(
         properties = {
                 // JWT
-                "jwt.token.secretKey=test",
+                "jwt.token.secretKey=testtest-secrettest-secrettest-secrettest-secrettest-secret",
                 "jwt.token.expiration.access=3600000",
                 "jwt.token.expiration.refresh=86400000",
 
