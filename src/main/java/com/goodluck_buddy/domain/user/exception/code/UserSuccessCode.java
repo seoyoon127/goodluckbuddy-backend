@@ -17,7 +17,10 @@ public enum UserSuccessCode implements BaseSuccessCode {
             "프로필이 저장되었습니다."),
     PROFILE_GET_OK(HttpStatus.OK,
             "USER200_3",
-            "프로필이 조회되었습니다.");
+            "프로필이 조회되었습니다."),
+    WITHDRAW_OK(HttpStatus.OK,
+            "USER200_4",
+            "탈퇴 처리가 완료되었습니다.");
 
     private final HttpStatus status;
     private final String code;

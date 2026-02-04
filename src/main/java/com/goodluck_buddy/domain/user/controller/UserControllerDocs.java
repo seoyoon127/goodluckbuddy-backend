@@ -27,4 +27,10 @@ public interface UserControllerDocs {
             description = "내 회원 정보를 조회합니다."
     )
     ApiResponse<UserResDto.Profile> getMyProfile(@RequestHeader("Authorization") String accessToken);
+
+    @Operation(
+            summary = "회원 탈퇴",
+            description = "해당 계정을 비활성화 시킵니다."
+    )
+    ApiResponse<Void> withdraw(@RequestHeader("Authorization") String accessToken);
 }

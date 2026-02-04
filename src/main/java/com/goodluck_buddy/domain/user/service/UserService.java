@@ -4,6 +4,7 @@ import com.goodluck_buddy.domain.user.converter.UserConverter;
 import com.goodluck_buddy.domain.user.dto.UserReqDto;
 import com.goodluck_buddy.domain.user.dto.UserResDto;
 import com.goodluck_buddy.domain.user.entity.User;
+import com.goodluck_buddy.domain.user.enums.Status;
 import com.goodluck_buddy.domain.user.exception.UserException;
 import com.goodluck_buddy.domain.user.exception.code.UserErrorCode;
 import com.goodluck_buddy.domain.user.repository.UserRepository;
@@ -37,6 +38,12 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
         return UserConverter.toMyProfile(user);
+    }
+
+    @Transactional
+    public void withdraw(String accessToken) {
+        Long userId = findUserIdByAccessToken(accessToken);
+        userRepository.withdraw(userId, Status.INACTIVATE, "");
     }
 
     private Long findUserIdByAccessToken(String accessToken) {

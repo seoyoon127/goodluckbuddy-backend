@@ -4,6 +4,7 @@ import com.goodluck_buddy.domain.user.entity.User;
 import com.goodluck_buddy.domain.user.enums.Category;
 import com.goodluck_buddy.domain.user.enums.Gender;
 import com.goodluck_buddy.domain.user.enums.SocialType;
+import com.goodluck_buddy.domain.user.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -19,13 +20,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying
     @Query("""
-                   UPDATE User u
-                   SET u.nickname = :nickname,
-                       u.gender = :gender,
-                       u.birth = :birth,
-                       u.interestCategory = :category
-                   WHERE u.id = :id
+               UPDATE User u
+               SET u.nickname = :nickname,
+                   u.gender = :gender,
+                   u.birth = :birth,
+                   u.interestCategory = :category
+               WHERE u.id = :id
             """)
     void updateProfile(@Param("id") Long id, @Param("nickname") String nickname,
                        @Param("gender") Gender gender, @Param("birth") LocalDate birth, @Param("category") Category category);
+
+    @Modifying
+    @Query("""
+                        UPDATE User u
+                        SET u.status = :status,
+                            u.providerId = :providerId
+                        WHERE u.id = :id
+            """)
+    void withdraw(@Param("id") Long id, @Param("status") Status status, @Param("providerId") String providerId);
 }

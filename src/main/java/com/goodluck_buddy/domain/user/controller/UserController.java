@@ -37,4 +37,10 @@ public class UserController implements UserControllerDocs {
         UserResDto.Profile profile = userService.getMyProfile(accessToken);
         return ApiResponse.onSuccess(UserSuccessCode.PROFILE_GET_OK, profile);
     }
+
+    @PatchMapping("/withdraw")
+    public ApiResponse<Void> withdraw(@RequestHeader("Authorization") String accessToken) {
+        userService.withdraw(accessToken);
+        return ApiResponse.onSuccess(UserSuccessCode.WITHDRAW_OK, null);
+    }
 }
