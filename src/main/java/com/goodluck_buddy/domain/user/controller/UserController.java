@@ -1,6 +1,7 @@
 package com.goodluck_buddy.domain.user.controller;
 
 import com.goodluck_buddy.domain.user.dto.UserReqDto;
+import com.goodluck_buddy.domain.user.dto.UserResDto;
 import com.goodluck_buddy.domain.user.exception.code.UserSuccessCode;
 import com.goodluck_buddy.domain.user.service.UserService;
 import com.goodluck_buddy.global.response.ApiResponse;
@@ -29,5 +30,11 @@ public class UserController implements UserControllerDocs {
             @Valid @RequestBody UserReqDto.Profile dto) {
         userService.updateProfile(accessToken, dto);
         return ApiResponse.onSuccess(UserSuccessCode.PROFILE_SAVE_OK, null);
+    }
+
+    @GetMapping("/me/profile")
+    public ApiResponse<UserResDto.Profile> getMyProfile(@RequestHeader("Authorization") String accessToken) {
+        UserResDto.Profile profile = userService.getMyProfile(accessToken);
+        return ApiResponse.onSuccess(UserSuccessCode.PROFILE_GET_OK, profile);
     }
 }
