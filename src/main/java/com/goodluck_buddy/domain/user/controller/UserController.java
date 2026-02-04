@@ -7,10 +7,7 @@ import com.goodluck_buddy.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,5 +21,13 @@ public class UserController implements UserControllerDocs {
     public ApiResponse<Void> checkNickname(@Valid @RequestBody UserReqDto.Nickname dto) {
         userService.checkNickname(dto.getNickname());
         return ApiResponse.onSuccess(UserSuccessCode.VALID_NICKNAME, null);
+    }
+
+    @PatchMapping("/profile")
+    public ApiResponse<Void> updateProfile(
+            @RequestHeader("Authorization") String accessToken,
+            @Valid @RequestBody UserReqDto.Profile dto) {
+        userService.updateProfile(accessToken, dto);
+        return ApiResponse.onSuccess(UserSuccessCode.PROFILE_SAVE_OK, null);
     }
 }
