@@ -25,6 +25,6 @@ public class Categories {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "parent_category")
-    private Category category;
+    private Category parentCategory;
 
 }
