@@ -10,7 +10,10 @@ import org.springframework.http.HttpStatus;
 public enum LetterSuccessCode implements BaseSuccessCode {
     LETTER_SAVE_OK(HttpStatus.OK,
             "LETTER200_1",
-            "편지가 저장되었습니다.");
+            "편지가 저장되었습니다."),
+    LETTERS_GET_OK(HttpStatus.OK,
+            "LETTER200_2",
+            "편지 목록이 조회되었습니다.");
 
     private final HttpStatus status;
     private final String code;

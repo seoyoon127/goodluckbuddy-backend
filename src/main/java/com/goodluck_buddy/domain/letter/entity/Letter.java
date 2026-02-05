@@ -1,5 +1,6 @@
 package com.goodluck_buddy.domain.letter.entity;
 
+import com.goodluck_buddy.domain.letter.entity.mapping.LetterInfo;
 import com.goodluck_buddy.domain.letter.enums.LetterDesign;
 import com.goodluck_buddy.global.entity.BaseEntity;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
@@ -41,4 +45,12 @@ public class Letter extends BaseEntity {
     @JoinColumn(name = "categories_id")
     private Categories categories;
 
+    @OneToMany(mappedBy = "letter", cascade = CascadeType.ALL)
+    private List<LetterInfo> letterInfos = new ArrayList<>();
+
+    public List<Info> getInfos() {
+        return letterInfos.stream()
+                .map(LetterInfo::getInfo)
+                .toList();
+    }
 }

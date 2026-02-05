@@ -1,6 +1,9 @@
 package com.goodluck_buddy.domain.letter.controller;
 
 import com.goodluck_buddy.domain.letter.dto.LetterReqDto;
+import com.goodluck_buddy.domain.letter.dto.LetterResDto;
+import com.goodluck_buddy.domain.letter.enums.Category;
+import com.goodluck_buddy.domain.letter.enums.SortType;
 import com.goodluck_buddy.domain.letter.exception.code.LetterSuccessCode;
 import com.goodluck_buddy.domain.letter.service.LetterService;
 import com.goodluck_buddy.global.response.ApiResponse;
@@ -8,6 +11,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,5 +26,15 @@ public class LetterController implements LetterControllerDocs {
     public ApiResponse<Void> saveLetter(@RequestHeader("Authorization") String accessToken, @Valid @RequestBody LetterReqDto.Letter dto) {
         letterService.saveLetter(accessToken, dto);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTER_SAVE_OK, null);
+    }
+
+    @GetMapping("")
+    public ApiResponse<List<LetterResDto.Letter>> getLetters(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) SortType sort
+    ) {
+        List<LetterResDto.Letter> reponse = letterService.getLetters(category, parentCategory, sort);
+        return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
     }
 }

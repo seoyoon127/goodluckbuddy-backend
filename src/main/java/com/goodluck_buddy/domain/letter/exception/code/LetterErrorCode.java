@@ -16,7 +16,10 @@ public enum LetterErrorCode implements BaseErrorCode {
             "해당 카테고리를 찾지 못했습니다."),
     INFO_NOT_FOUND(HttpStatus.NOT_FOUND,
             "INFO404",
-            "해당 정보 키워드가 존재하지 않습니다.");
+            "해당 정보 키워드가 존재하지 않습니다."),
+    NO_SORT(HttpStatus.BAD_REQUEST,
+            "SORT400",
+            "정렬 방식을 선택해야합니다.");
 
     private final HttpStatus status;
     private final String code;

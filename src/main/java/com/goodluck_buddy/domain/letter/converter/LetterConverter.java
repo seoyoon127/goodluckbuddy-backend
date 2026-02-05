@@ -1,6 +1,7 @@
 package com.goodluck_buddy.domain.letter.converter;
 
 import com.goodluck_buddy.domain.letter.dto.LetterReqDto;
+import com.goodluck_buddy.domain.letter.dto.LetterResDto;
 import com.goodluck_buddy.domain.letter.entity.Categories;
 import com.goodluck_buddy.domain.letter.entity.Info;
 import com.goodluck_buddy.domain.letter.entity.Letter;
@@ -16,6 +17,7 @@ public class LetterConverter {
                 .writerId(memberId)
                 .title(dto.getTitle())
                 .content(dto.getContent())
+                .likeCount(0L)
                 .letterDesign(dto.getLetterDesign())
                 .categories(categories)
                 .build();
@@ -28,6 +30,20 @@ public class LetterConverter {
         return LetterInfo.builder()
                 .letter(letter)
                 .info(info)
+                .build();
+    }
+
+    public static LetterResDto.Letter toLetterRes(
+            Letter letter,
+            String writerName
+    ) {
+        return LetterResDto.Letter.builder()
+                .letterId(letter.getId())
+                .writerName(writerName)
+                .title(letter.getTitle())
+                .content(letter.getContent())
+                .likeCount(letter.getLikeCount())
+                .parentCategory(letter.getCategories().getParentCategory())
                 .build();
     }
 }
