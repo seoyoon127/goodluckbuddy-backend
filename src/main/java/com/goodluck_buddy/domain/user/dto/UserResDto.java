@@ -1,6 +1,6 @@
 package com.goodluck_buddy.domain.user.dto;
 
-import com.goodluck_buddy.domain.user.enums.Category;
+import com.goodluck_buddy.domain.letter.enums.Category;
 import com.goodluck_buddy.domain.user.enums.Gender;
 import lombok.Builder;
 import lombok.Getter;

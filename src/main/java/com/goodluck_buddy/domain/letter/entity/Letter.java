@@ -1,6 +1,7 @@
 package com.goodluck_buddy.domain.letter.entity;
 
 import com.goodluck_buddy.domain.letter.enums.LetterDesign;
+import com.goodluck_buddy.global.entity.BaseEntity;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Tag(name = "Letter")
-public class Letter {
+public class Letter extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +36,9 @@ public class Letter {
     @Column(name = "letter_design")
     @Enumerated(EnumType.STRING)
     private LetterDesign letterDesign;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categories_id")
+    private Categories categories;
+
 }
