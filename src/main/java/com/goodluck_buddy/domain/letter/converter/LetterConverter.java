@@ -7,6 +7,8 @@ import com.goodluck_buddy.domain.letter.entity.Info;
 import com.goodluck_buddy.domain.letter.entity.Letter;
 import com.goodluck_buddy.domain.letter.entity.mapping.LetterInfo;
 
+import java.util.List;
+
 public class LetterConverter {
     public static Letter toLetter(
             Long memberId,
@@ -44,6 +46,27 @@ public class LetterConverter {
                 .content(letter.getContent())
                 .likeCount(letter.getLikeCount())
                 .parentCategory(letter.getCategories().getParentCategory())
+                .build();
+    }
+
+    public static LetterResDto.LetterDetail toLetterDetailRes(
+            Letter letter,
+            String writerName,
+            List<Info> infos,
+            boolean isMine
+    ) {
+        return LetterResDto.LetterDetail.builder()
+                .letterId(letter.getId())
+                .writerName(writerName)
+                .title(letter.getTitle())
+                .content(letter.getContent())
+                .letterDesign(letter.getLetterDesign())
+                .createdAt(letter.getCreatedAt())
+                .likeCount(letter.getLikeCount())
+                .parentCategory(letter.getCategories().getParentCategory())
+                .category(letter.getCategories().getName())
+                .mine(isMine)
+                .infos(infos.stream().map(i -> i.getName()).toList())
                 .build();
     }
 }

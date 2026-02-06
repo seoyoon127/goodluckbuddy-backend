@@ -6,10 +6,12 @@ import com.goodluck_buddy.domain.letter.enums.Category;
 import com.goodluck_buddy.domain.letter.enums.SortType;
 import com.goodluck_buddy.domain.letter.exception.code.LetterSuccessCode;
 import com.goodluck_buddy.domain.letter.service.LetterService;
+import com.goodluck_buddy.domain.user.entity.User;
 import com.goodluck_buddy.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,5 +38,12 @@ public class LetterController implements LetterControllerDocs {
     ) {
         List<LetterResDto.Letter> reponse = letterService.getLetters(category, parentCategory, sort);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
+    }
+
+    @GetMapping("/{id}")
+    public ApiResponse<LetterResDto.LetterDetail> getLetter(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        Long userId = (user != null) ? user.getId() : null;
+        LetterResDto.LetterDetail response = letterService.getLetter(id, userId);
+        return ApiResponse.onSuccess(LetterSuccessCode.LETTER_GET_OK, response);
     }
 }

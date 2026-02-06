@@ -68,12 +68,21 @@ public class LetterService {
         List<Letter> letters = letterRepository.findAllByFilters(category, parentCategory, sort);
         return letters.stream()
                 .map(letter -> {
-                    List<Info> infos = letter.getInfos();
                     User writer = userRepository.findById(letter.getWriterId())
                             .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
                     return LetterConverter.toLetterRes(letter, writer.getNickname());
                 })
                 .toList();
+    }
+
+    public LetterResDto.LetterDetail getLetter(Long letterId, Long userId) {
+        Letter letter = letterRepository.findById(letterId)
+                .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
+        User writer = userRepository.findById(letter.getWriterId())
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+        boolean isMine = (writer.getId() == userId) ? true : false;
+        List<Info> infos = letter.getInfos();
+        return LetterConverter.toLetterDetailRes(letter, writer.getNickname(), infos, isMine);
     }
 
     private Long findUserIdByAccessToken(String accessToken) {

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface LetterRepository extends JpaRepository<Letter, Long> {
 
@@ -22,4 +23,6 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
             @Param("category") String category,
             @Param("parentCategory") Category parentCategory,
             Sort sort);
+
+    Optional<Letter> findById(Long letterId);
 }
