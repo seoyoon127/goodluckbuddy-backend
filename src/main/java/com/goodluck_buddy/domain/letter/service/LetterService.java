@@ -20,10 +20,10 @@ import com.goodluck_buddy.domain.user.exception.UserException;
 import com.goodluck_buddy.domain.user.exception.code.UserErrorCode;
 import com.goodluck_buddy.domain.user.repository.UserRepository;
 import com.goodluck_buddy.global.jwt.JwtUtil;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -75,16 +75,17 @@ public class LetterService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public LetterResDto.LetterDetail getLetter(Long letterId, Long userId) {
         Letter letter = letterRepository.findById(letterId)
                 .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
         User writer = userRepository.findById(letter.getWriterId())
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-        boolean isMine = (writer.getId() == userId) ? true : false;
+        boolean isMine = userId.equals(writer.getId());
         List<Info> infos = letter.getInfos();
         return LetterConverter.toLetterDetailRes(letter, writer.getNickname(), infos, isMine);
     }
-    
+
     @Transactional
     public void updateLetter(String accessToken, LetterReqDto.LetterUpdate dto, Long letterId) {
         Long userId = findUserIdByAccessToken(accessToken);
@@ -93,7 +94,7 @@ public class LetterService {
         User writer = userRepository.findById(letter.getWriterId())
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
 
-        if (userId != writer.getId()) {
+        if (!userId.equals(writer.getId())) {
             throw new LetterException(LetterErrorCode.INVALID_WRITER);
         }
 

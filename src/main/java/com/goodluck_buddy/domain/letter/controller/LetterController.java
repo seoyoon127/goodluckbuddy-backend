@@ -65,7 +65,7 @@ public class LetterController implements LetterControllerDocs {
     @PatchMapping("/{id}")
     public ApiResponse<Void> updateMyLetter(
             @RequestHeader("Authorization") String accessToken,
-            @RequestBody LetterReqDto.LetterUpdate dto,
+            @Valid @RequestBody LetterReqDto.LetterUpdate dto,
             @PathVariable Long id) {
         letterService.updateLetter(accessToken, dto, id);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTER_PATCH_OK, null);

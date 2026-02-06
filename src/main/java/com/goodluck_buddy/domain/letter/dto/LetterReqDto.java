@@ -30,7 +30,6 @@ public class LetterReqDto {
         @NotNull
         private Category parentCategory;
 
-        @NotBlank
         private List<@NotBlank String> infoNames;
     }
 
