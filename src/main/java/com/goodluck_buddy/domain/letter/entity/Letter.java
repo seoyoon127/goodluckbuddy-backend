@@ -2,6 +2,7 @@ package com.goodluck_buddy.domain.letter.entity;
 
 import com.goodluck_buddy.domain.letter.entity.mapping.LetterInfo;
 import com.goodluck_buddy.domain.letter.enums.LetterDesign;
+import com.goodluck_buddy.domain.like.entity.Like;
 import com.goodluck_buddy.global.entity.BaseEntity;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.*;
@@ -54,6 +55,9 @@ public class Letter extends BaseEntity {
                 .toList();
     }
 
+    @OneToMany(mappedBy = "letter", cascade = CascadeType.ALL)
+    private List<Like> likes = new ArrayList<>();
+
     public void updateTitle(String title) {
         this.title = title;
     }
@@ -77,5 +81,13 @@ public class Letter extends BaseEntity {
                     LetterInfo.of(this, info)
             );
         }
+    }
+
+    public void addLike() {
+        likeCount += 1;
+    }
+
+    public void removeLike() {
+        likeCount -= 1;
     }
 }
