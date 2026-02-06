@@ -14,4 +14,12 @@ public interface LikeControllerDocs {
     ApiResponse<Void> saveLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long letterId);
+
+    @Operation(
+            summary = "좋아요 취소",
+            description = "해당 편지의 좋아요를 삭제한다."
+    )
+    ApiResponse<Void> deleteLike(
+            @RequestHeader("Authorization") String accessToken,
+            @PathVariable Long letterId);
 }

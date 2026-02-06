@@ -27,18 +27,33 @@ public class LikeService {
 
     @Transactional
     public void saveLike(String accessToken, Long letterId) {
-        Long userId = findUserIdByAccessToken(accessToken);
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-        Letter letter = letterRepository.findById(letterId)
-                .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
+        User user = getUser(accessToken);
+        Letter letter = getLetter(letterId);
         Like like = LikeConverter.toLike(letter, user);
         likeRepository.save(like);
         letter.addLike();
     }
 
+    @Transactional
+    public void deleteLike(String accessToken, Long letterId) {
+        User user = getUser(accessToken);
+        Letter letter = getLetter(letterId);
+        likeRepository.deleteByUserAndLetter(user, letter);
+    }
+
     private Long findUserIdByAccessToken(String accessToken) {
         String token = accessToken.split(" ")[1];
         return Long.parseLong(jwtUtil.getId(token));
+    }
+
+    private User getUser(String accessToken) {
+        Long userId = findUserIdByAccessToken(accessToken);
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+    }
+
+    private Letter getLetter(Long letterId) {
+        return letterRepository.findById(letterId)
+                .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
     }
 }

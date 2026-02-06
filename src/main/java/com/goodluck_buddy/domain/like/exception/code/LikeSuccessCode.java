@@ -10,7 +10,10 @@ import org.springframework.http.HttpStatus;
 public enum LikeSuccessCode implements BaseSuccessCode {
     LIKE_SAVE_OK(HttpStatus.OK,
             "LIKE200_1",
-            "좋아요가 저장되었습니다.");
+            "좋아요가 저장되었습니다."),
+    LIKE_DELETE_OK(HttpStatus.OK,
+            "LIKE200_2",
+            "좋아요가 삭제되었습니다.");
 
     private final HttpStatus status;
     private final String code;

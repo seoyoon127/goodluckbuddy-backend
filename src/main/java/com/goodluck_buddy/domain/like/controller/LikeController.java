@@ -22,4 +22,12 @@ public class LikeController implements LikeControllerDocs {
         likeService.saveLike(accessToken, letterId);
         return ApiResponse.onSuccess(LikeSuccessCode.LIKE_SAVE_OK, null);
     }
+
+    @DeleteMapping("/{letterId}/like")
+    public ApiResponse<Void> deleteLike(
+            @RequestHeader("Authorization") String accessToken,
+            @PathVariable Long letterId) {
+        likeService.deleteLike(accessToken, letterId);
+        return ApiResponse.onSuccess(LikeSuccessCode.LIKE_DELETE_OK, null);
+    }
 }
