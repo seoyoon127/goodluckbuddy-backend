@@ -30,15 +30,20 @@ public class LikeService {
         User user = getUser(accessToken);
         Letter letter = getLetter(letterId);
         Like like = LikeConverter.toLike(letter, user);
-        likeRepository.save(like);
-        letter.addLike();
+        if (!likeRepository.existsByUserAndLetter(user, letter)) {
+            likeRepository.save(like);
+            letter.addLike();
+        }
     }
 
     @Transactional
     public void deleteLike(String accessToken, Long letterId) {
         User user = getUser(accessToken);
         Letter letter = getLetter(letterId);
-        likeRepository.deleteByUserAndLetter(user, letter);
+        if (likeRepository.existsByUserAndLetter(user, letter)) {
+            likeRepository.deleteByUserAndLetter(user, letter);
+            letter.removeLike();
+        }
     }
 
     private Long findUserIdByAccessToken(String accessToken) {

@@ -86,4 +86,8 @@ public class Letter extends BaseEntity {
     public void addLike() {
         likeCount += 1;
     }
+
+    public void removeLike() {
+        likeCount -= 1;
+    }
 }
