@@ -38,7 +38,7 @@ public class LetterController implements LetterControllerDocs {
     public ApiResponse<List<LetterResDto.Letter>> getLetters(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Category parentCategory,
-            @RequestParam(required = false) SortType sort
+            @RequestParam SortType sort
     ) {
         List<LetterResDto.Letter> reponse = letterService.getLetters(category, parentCategory, null, sort);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
@@ -56,7 +56,7 @@ public class LetterController implements LetterControllerDocs {
             @RequestHeader("Authorization") String accessToken,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Category parentCategory,
-            @RequestParam(required = false) SortType sort) {
+            @RequestParam SortType sort) {
         Long userId = parseLong(jwtUtil.getId(accessToken.split(" ")[1]));
         List<LetterResDto.Letter> reponse = letterService.getLetters(category, parentCategory, userId, sort);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
@@ -81,7 +81,7 @@ public class LetterController implements LetterControllerDocs {
     public ApiResponse<List<LetterResDto.Letter>> getUserLetters(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Category parentCategory,
-            @RequestParam(required = false) SortType sort,
+            @RequestParam SortType sort,
             @PathVariable Long userId) {
         List<LetterResDto.Letter> reponse = letterService.getLetters(category, parentCategory, userId, sort);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);

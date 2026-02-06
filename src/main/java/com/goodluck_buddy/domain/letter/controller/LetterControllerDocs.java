@@ -31,7 +31,7 @@ public interface LetterControllerDocs {
     ApiResponse<List<LetterResDto.Letter>> getLetters(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Category parentCategory,
-            @RequestParam(required = false) SortType sort
+            @RequestParam SortType sort
     );
 
     @Operation(
@@ -48,7 +48,7 @@ public interface LetterControllerDocs {
             @RequestHeader("Authorization") String accessToken,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Category parentCategory,
-            @RequestParam(required = false) SortType sort);
+            @RequestParam SortType sort);
 
     @Operation(
             summary = "내 편지 수정",
@@ -72,6 +72,6 @@ public interface LetterControllerDocs {
     ApiResponse<List<LetterResDto.Letter>> getUserLetters(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Category parentCategory,
-            @RequestParam(required = false) SortType sort,
+            @RequestParam SortType sort,
             @PathVariable Long userId);
 }
