@@ -1,6 +1,6 @@
 package com.goodluck_buddy.domain.user.entity;
 
-import com.goodluck_buddy.domain.user.enums.Category;
+import com.goodluck_buddy.domain.letter.enums.Category;
 import com.goodluck_buddy.domain.user.enums.Gender;
 import com.goodluck_buddy.domain.user.enums.SocialType;
 import com.goodluck_buddy.domain.user.enums.Status;

@@ -15,6 +15,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.http.HttpMethod.*;
+
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class SecurityConfig {
             "/swagger-resources/**",
             "/v3/api-docs/**",
             "/api/auth/**",
+            "/api/letters/**"
     };
 
     @Bean
@@ -35,6 +38,9 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(allowUris).permitAll()
+                        .requestMatchers(POST, "/api/letters/**").authenticated()
+                        .requestMatchers(PATCH, "/api/letters/**").authenticated()
+                        .requestMatchers(DELETE, "/api/letters/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
