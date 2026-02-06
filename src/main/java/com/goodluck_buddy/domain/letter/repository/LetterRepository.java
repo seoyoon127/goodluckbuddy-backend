@@ -18,10 +18,12 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
             LEFT JOIN FETCH li.info
             WHERE (:category IS NULL or l.categories.name = :category)
             AND (:parentCategory IS NULL or l.categories.parentCategory = :parentCategory)
+            AND (:userId IS NULL or l.writerId = :userId)
             """)
     List<Letter> findAllByFilters(
             @Param("category") String category,
             @Param("parentCategory") Category parentCategory,
+            @Param("userId") Long userId,
             Sort sort);
 
     Optional<Letter> findById(Long letterId);

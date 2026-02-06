@@ -44,14 +44,34 @@ public interface LetterControllerDocs {
             summary = "내 편지 목록 조회",
             description = "내가 작성한 편지 목록을 조회합니다."
     )
-    ApiResponse<List<LetterResDto.Letter>> getMyLetters(@RequestHeader("Authorization") String accessToken);
+    ApiResponse<List<LetterResDto.Letter>> getMyLetters(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) SortType sort);
 
     @Operation(
             summary = "내 편지 수정",
-            description = "내가 작성한 편지를 수정합니다."
+            description = "해당 편지를 수정합니다."
     )
     ApiResponse<Void> updateMyLetter(
             @RequestHeader("Authorization") String accessToken,
             @RequestBody LetterReqDto.LetterUpdate dto,
             @PathVariable Long id);
+
+    @Operation(
+            summary = "내 편지 삭제",
+            description = "해당 편지를 삭제합니다."
+    )
+    ApiResponse<Void> deleteMyLetter(@RequestHeader("Authorization") String accessToken, @PathVariable Long id);
+
+    @Operation(
+            summary = "타인 편지 목록 조회",
+            description = "특정 유저의 편지 목록을 조회합니다."
+    )
+    ApiResponse<List<LetterResDto.Letter>> getUserLetters(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) SortType sort,
+            @PathVariable Long userId);
 }

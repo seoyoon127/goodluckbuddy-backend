@@ -57,7 +57,7 @@ public class LetterService {
         }
     }
 
-    public List<LetterResDto.Letter> getLetters(String category, Category parentCategory, SortType sortType) {
+    public List<LetterResDto.Letter> getLetters(String category, Category parentCategory, Long id, SortType sortType) {
         if (sortType == null) {
             throw new LetterException(LetterErrorCode.NO_SORT);
         }
@@ -65,7 +65,7 @@ public class LetterService {
             case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
             case LIKE -> Sort.by(Sort.Direction.DESC, "likeCount");
         };
-        List<Letter> letters = letterRepository.findAllByFilters(category, parentCategory, sort);
+        List<Letter> letters = letterRepository.findAllByFilters(category, parentCategory, id, sort);
         return letters.stream()
                 .map(letter -> {
                     User writer = userRepository.findById(letter.getWriterId())
@@ -84,20 +84,7 @@ public class LetterService {
         List<Info> infos = letter.getInfos();
         return LetterConverter.toLetterDetailRes(letter, writer.getNickname(), infos, isMine);
     }
-
-    public List<LetterResDto.Letter> getMyLetters(String accessToken) {
-        Long userId = findUserIdByAccessToken(accessToken);
-        List<Letter> letters = letterRepository.findByWriterId(userId)
-                .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
-        return letters.stream()
-                .map(letter -> {
-                    User writer = userRepository.findById(userId)
-                            .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-                    return LetterConverter.toLetterRes(letter, writer.getNickname());
-                })
-                .toList();
-    }
-
+    
     @Transactional
     public void updateLetter(String accessToken, LetterReqDto.LetterUpdate dto, Long letterId) {
         Long userId = findUserIdByAccessToken(accessToken);
