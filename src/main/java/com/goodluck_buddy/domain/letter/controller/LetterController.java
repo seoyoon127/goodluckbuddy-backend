@@ -52,4 +52,13 @@ public class LetterController implements LetterControllerDocs {
         List<LetterResDto.Letter> reponse = letterService.getMyLetters(accessToken);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
     }
+
+    @PatchMapping("/{id}")
+    public ApiResponse<Void> updateMyLetter(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody LetterReqDto.LetterUpdate dto,
+            @PathVariable Long id) {
+        letterService.updateLetter(accessToken, dto, id);
+        return ApiResponse.onSuccess(LetterSuccessCode.LETTER_PATCH_OK, null);
+    }
 }

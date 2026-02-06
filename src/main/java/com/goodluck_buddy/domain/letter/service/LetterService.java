@@ -98,6 +98,40 @@ public class LetterService {
                 .toList();
     }
 
+    @Transactional
+    public void updateLetter(String accessToken, LetterReqDto.LetterUpdate dto, Long letterId) {
+        Long userId = findUserIdByAccessToken(accessToken);
+        Letter letter = letterRepository.findById(letterId)
+                .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
+        User writer = userRepository.findById(letter.getWriterId())
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+
+        if (userId != writer.getId()) {
+            throw new LetterException(LetterErrorCode.INVALID_WRITER);
+        }
+
+        if (dto.getTitle() != null && !dto.getTitle().isEmpty()) {
+            letter.updateTitle(dto.getTitle());
+        }
+        if (dto.getContent() != null && !dto.getContent().isEmpty()) {
+            letter.updateContent(dto.getContent());
+        }
+        if (dto.getLetterDesign() != null) {
+            letter.updateLetterDesign(dto.getLetterDesign());
+        }
+        if (dto.getCategory() != null) {
+            Categories category = categoriesRepository
+                    .findByNameAndParentCategory(dto.getCategory(), dto.getParentCategory())
+                    .orElseThrow(() -> new LetterException(LetterErrorCode.CATEGORY_NOT_FOUND));
+            letter.updateCategories(category);
+        }
+        if (dto.getInfoNames() != null) {
+            letter.updateInfos(dto.getInfoNames().stream()
+                    .map(i -> infoRepository.findByName(i)
+                            .orElseThrow(() -> new LetterException(LetterErrorCode.INFO_NOT_FOUND))).toList());
+        }
+    }
+
     private Long findUserIdByAccessToken(String accessToken) {
         String token = accessToken.split(" ")[1];
         return Long.parseLong(jwtUtil.getId(token));

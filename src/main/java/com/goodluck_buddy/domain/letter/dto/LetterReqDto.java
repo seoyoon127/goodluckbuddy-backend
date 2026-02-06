@@ -33,4 +33,23 @@ public class LetterReqDto {
         @NotBlank
         private List<@NotBlank String> infoNames;
     }
+
+    @Getter
+    public static class LetterUpdate {
+        @Size(min = 1, max = 25)
+        private String title;
+
+        @Size(min = 1, max = 200)
+        private String content;
+
+        private LetterDesign letterDesign;
+
+        @NotNull
+        private String category;
+
+        @NotNull
+        private Category parentCategory;
+
+        private List<@NotBlank String> infoNames;
+    }
 }

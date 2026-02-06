@@ -53,4 +53,29 @@ public class Letter extends BaseEntity {
                 .map(LetterInfo::getInfo)
                 .toList();
     }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateLetterDesign(LetterDesign letterDesign) {
+        this.letterDesign = letterDesign;
+    }
+
+    public void updateCategories(Categories categories) {
+        this.categories = categories;
+    }
+
+    public void updateInfos(List<Info> infos) {
+        this.letterInfos.clear();
+        for (Info info : infos) {
+            this.letterInfos.add(
+                    LetterInfo.of(this, info)
+            );
+        }
+    }
 }

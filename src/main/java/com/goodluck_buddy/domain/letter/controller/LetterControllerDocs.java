@@ -45,4 +45,13 @@ public interface LetterControllerDocs {
             description = "내가 작성한 편지 목록을 조회합니다."
     )
     ApiResponse<List<LetterResDto.Letter>> getMyLetters(@RequestHeader("Authorization") String accessToken);
+
+    @Operation(
+            summary = "내 편지 수정",
+            description = "내가 작성한 편지를 수정합니다."
+    )
+    ApiResponse<Void> updateMyLetter(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestBody LetterReqDto.LetterUpdate dto,
+            @PathVariable Long id);
 }

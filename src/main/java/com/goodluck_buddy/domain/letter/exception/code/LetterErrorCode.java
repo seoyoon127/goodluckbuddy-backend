@@ -19,7 +19,10 @@ public enum LetterErrorCode implements BaseErrorCode {
             "해당 정보 키워드가 존재하지 않습니다."),
     NO_SORT(HttpStatus.BAD_REQUEST,
             "SORT400",
-            "정렬 방식을 선택해야합니다.");
+            "정렬 방식을 선택해야합니다."),
+    INVALID_WRITER(HttpStatus.BAD_REQUEST,
+            "WRITER400",
+            "작성자만 접근할 수 있는 기능입니다.");
 
     private final HttpStatus status;
     private final String code;

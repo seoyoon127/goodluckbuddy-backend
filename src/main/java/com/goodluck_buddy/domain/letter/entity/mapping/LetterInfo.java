@@ -28,4 +28,13 @@ public class LetterInfo {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "info_id")
     private Info info;
+
+    private LetterInfo(Letter letter, Info info) {
+        this.letter = letter;
+        this.info = info;
+    }
+
+    public static LetterInfo of(Letter letter, Info info) {
+        return new LetterInfo(letter, info);
+    }
 }
