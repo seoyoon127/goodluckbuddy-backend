@@ -61,4 +61,10 @@ public class LetterController implements LetterControllerDocs {
         letterService.updateLetter(accessToken, dto, id);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTER_PATCH_OK, null);
     }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteMyLetter(@RequestHeader("Authorization") String accessToken, @PathVariable Long id) {
+        letterService.deleteLetter(accessToken, id);
+        return ApiResponse.onSuccess(LetterSuccessCode.LETTER_DELETE_OK, null);
+    }
 }

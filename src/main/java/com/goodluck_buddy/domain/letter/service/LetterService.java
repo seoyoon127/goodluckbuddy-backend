@@ -132,6 +132,17 @@ public class LetterService {
         }
     }
 
+    @Transactional
+    public void deleteLetter(String accessToken, Long letterId) {
+        Long userId = findUserIdByAccessToken(accessToken);
+        Letter letter = letterRepository.findById(letterId)
+                .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
+        if (userId != letter.getWriterId()) {
+            throw new LetterException(LetterErrorCode.INVALID_WRITER);
+        }
+        letterRepository.delete(letter);
+    }
+
     private Long findUserIdByAccessToken(String accessToken) {
         String token = accessToken.split(" ")[1];
         return Long.parseLong(jwtUtil.getId(token));

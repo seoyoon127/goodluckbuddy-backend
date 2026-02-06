@@ -19,7 +19,10 @@ public enum LetterSuccessCode implements BaseSuccessCode {
             "편지가 조회되었습니다."),
     LETTER_PATCH_OK(HttpStatus.OK,
             "LETTER200_4",
-            "편지가 수정되었습니다.");
+            "편지가 수정되었습니다."),
+    LETTER_DELETE_OK(HttpStatus.OK,
+            "LETTER200_5",
+            "편지가 삭제되었습니다.");
 
     private final HttpStatus status;
     private final String code;
