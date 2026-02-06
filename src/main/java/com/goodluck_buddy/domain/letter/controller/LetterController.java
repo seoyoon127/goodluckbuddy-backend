@@ -46,4 +46,10 @@ public class LetterController implements LetterControllerDocs {
         LetterResDto.LetterDetail response = letterService.getLetter(id, userId);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTER_GET_OK, response);
     }
+
+    @GetMapping("/me")
+    public ApiResponse<List<LetterResDto.Letter>> getMyLetters(@RequestHeader("Authorization") String accessToken) {
+        List<LetterResDto.Letter> reponse = letterService.getMyLetters(accessToken);
+        return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
+    }
 }

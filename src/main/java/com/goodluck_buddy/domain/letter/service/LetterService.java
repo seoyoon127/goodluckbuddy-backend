@@ -85,6 +85,19 @@ public class LetterService {
         return LetterConverter.toLetterDetailRes(letter, writer.getNickname(), infos, isMine);
     }
 
+    public List<LetterResDto.Letter> getMyLetters(String accessToken) {
+        Long userId = findUserIdByAccessToken(accessToken);
+        List<Letter> letters = letterRepository.findByWriterId(userId)
+                .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
+        return letters.stream()
+                .map(letter -> {
+                    User writer = userRepository.findById(userId)
+                            .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+                    return LetterConverter.toLetterRes(letter, writer.getNickname());
+                })
+                .toList();
+    }
+
     private Long findUserIdByAccessToken(String accessToken) {
         String token = accessToken.split(" ")[1];
         return Long.parseLong(jwtUtil.getId(token));

@@ -39,4 +39,10 @@ public interface LetterControllerDocs {
             description = "편지 세부 내용을 조회합니다."
     )
     ApiResponse<LetterResDto.LetterDetail> getLetter(@PathVariable Long id, @AuthenticationPrincipal User user);
+
+    @Operation(
+            summary = "내 편지 목록 조회",
+            description = "내가 작성한 편지 목록을 조회합니다."
+    )
+    ApiResponse<List<LetterResDto.Letter>> getMyLetters(@RequestHeader("Authorization") String accessToken);
 }

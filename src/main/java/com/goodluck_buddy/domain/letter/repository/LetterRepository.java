@@ -25,4 +25,6 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
             Sort sort);
 
     Optional<Letter> findById(Long letterId);
+
+    Optional<List<Letter>> findByWriterId(Long writerId);
 }
