@@ -1,6 +1,8 @@
 package com.goodluck_buddy.domain.reply.service;
 
 import com.goodluck_buddy.domain.letter.entity.Letter;
+import com.goodluck_buddy.domain.letter.enums.Category;
+import com.goodluck_buddy.domain.letter.enums.SortType;
 import com.goodluck_buddy.domain.letter.exception.LetterException;
 import com.goodluck_buddy.domain.letter.exception.code.LetterErrorCode;
 import com.goodluck_buddy.domain.letter.repository.LetterRepository;
@@ -18,6 +20,7 @@ import com.goodluck_buddy.domain.user.repository.UserRepository;
 import com.goodluck_buddy.global.jwt.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -67,11 +70,14 @@ public class ReplyService {
         replyRepository.delete(reply);
     }
 
-    public List<ReplyResDto.ReplyPreview> getMyReplies(String accessToken) {
-        Long userId = findUserIdByAccessToken(accessToken);
+    public List<ReplyResDto.ReplyPreview> getReplies(String category, Category parentCategory, Long userId, SortType sortType) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-        List<Reply> replies = replyRepository.findAllByUser(user);
+        Sort sort = switch (sortType) {
+            case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
+            case LIKE -> Sort.by(Sort.Direction.DESC, "likeCount");
+        };
+        List<Reply> replies = replyRepository.findAllByFilters(category, parentCategory, userId, sort);
         return replies.stream()
                 .map(r -> {
                     User writer = userRepository.findById(userId)

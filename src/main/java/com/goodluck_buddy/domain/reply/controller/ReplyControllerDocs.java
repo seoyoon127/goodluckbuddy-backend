@@ -1,5 +1,7 @@
 package com.goodluck_buddy.domain.reply.controller;
 
+import com.goodluck_buddy.domain.letter.enums.Category;
+import com.goodluck_buddy.domain.letter.enums.SortType;
 import com.goodluck_buddy.domain.reply.dto.ReplyReqDto;
 import com.goodluck_buddy.domain.reply.dto.ReplyResDto;
 import com.goodluck_buddy.global.response.ApiResponse;
@@ -8,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -38,5 +41,19 @@ public interface ReplyControllerDocs {
             summary = "내 답글 목록 조회",
             description = "내가 작성한 답글 목록을 조회합니다."
     )
-    ApiResponse<List<ReplyResDto.ReplyPreview>> getMyReplies(@RequestHeader("Authorization") String accessToken);
+    ApiResponse<List<ReplyResDto.ReplyPreview>> getMyReplies(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Category parentCategory,
+            @RequestParam SortType sort);
+
+    @Operation(
+            summary = "타인 답글 목록 조회",
+            description = "해당 유저가 작성한 답글 목록을 조회합니다."
+    )
+    ApiResponse<List<ReplyResDto.ReplyPreview>> getUserReplies(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Category parentCategory,
+            @RequestParam SortType sort,
+            @PathVariable Long userId);
 }
