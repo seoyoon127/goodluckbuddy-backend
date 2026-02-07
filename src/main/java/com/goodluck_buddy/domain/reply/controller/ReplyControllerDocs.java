@@ -14,8 +14,8 @@ import java.util.List;
 public interface ReplyControllerDocs {
 
     @Operation(
-            summary = "답글 조회",
-            description = "해당 편지의 답글을 조회합니다."
+            summary = "답글 목록 조회",
+            description = "해당 편지의 답글 목록을 조회합니다."
     )
     ApiResponse<List<ReplyResDto.Reply>> getReplies(@PathVariable Long id);
 
@@ -33,4 +33,10 @@ public interface ReplyControllerDocs {
             description = "해당 편지에 답글을 삭제합니다."
     )
     ApiResponse<Void> deleteReply(@RequestHeader("Authorization") String accessToken, @PathVariable Long id);
+
+    @Operation(
+            summary = "내 답글 목록 조회",
+            description = "내가 작성한 답글 목록을 조회합니다."
+    )
+    ApiResponse<List<ReplyResDto.ReplyPreview>> getMyReplies(@RequestHeader("Authorization") String accessToken);
 }

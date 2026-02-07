@@ -67,6 +67,19 @@ public class ReplyService {
         replyRepository.delete(reply);
     }
 
+    public List<ReplyResDto.ReplyPreview> getMyReplies(String accessToken) {
+        Long userId = findUserIdByAccessToken(accessToken);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+        List<Reply> replies = replyRepository.findAllByUser(user);
+        return replies.stream()
+                .map(r -> {
+                    User writer = userRepository.findById(userId)
+                            .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+                    return ReplyConverter.toReplyPreviewRes(r, writer.getNickname());
+                }).toList();
+    }
+
     private Long findUserIdByAccessToken(String accessToken) {
         String token = accessToken.split(" ")[1];
         return Long.parseLong(jwtUtil.getId(token));

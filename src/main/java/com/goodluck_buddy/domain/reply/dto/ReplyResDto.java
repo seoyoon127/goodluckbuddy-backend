@@ -20,7 +20,7 @@ public class ReplyResDto {
 
     @Getter
     @Builder
-    public static class MyReply {
+    public static class ReplyPreview {
         private Long letterId;
         private Long replyId;
         private String letterTitle;

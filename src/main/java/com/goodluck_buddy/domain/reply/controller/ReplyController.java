@@ -40,4 +40,10 @@ public class ReplyController implements ReplyControllerDocs {
         replyService.deleteReply(accessToken, id);
         return ApiResponse.onSuccess(ReplySuccessCode.REPLY_DELETE_OK, null);
     }
+
+    @GetMapping("/me")
+    public ApiResponse<List<ReplyResDto.ReplyPreview>> getMyReplies(@RequestHeader("Authorization") String accessToken) {
+        List<ReplyResDto.ReplyPreview> response = replyService.getMyReplies(accessToken);
+        return ApiResponse.onSuccess(ReplySuccessCode.REPLY_GET_OK, response);
+    }
 }

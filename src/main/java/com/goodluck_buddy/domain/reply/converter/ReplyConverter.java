@@ -33,4 +33,20 @@ public class ReplyConverter {
                 .likeCount(0L)
                 .build();
     }
+
+    public static ReplyResDto.ReplyPreview toReplyPreviewRes(
+            Reply reply,
+            String writerName
+    ) {
+        return ReplyResDto.ReplyPreview.builder()
+                .replyId(reply.getId())
+                .content(reply.getContent())
+                .letterParentCategory(reply.getLetter().getCategories().getParentCategory())
+                .letterId(reply.getLetter().getId())
+                .createdAt(reply.getCreatedAt())
+                .writerName(writerName)
+                .likeCount(reply.getLikeCount())
+                .letterTitle(reply.getLetter().getTitle())
+                .build();
+    }
 }
