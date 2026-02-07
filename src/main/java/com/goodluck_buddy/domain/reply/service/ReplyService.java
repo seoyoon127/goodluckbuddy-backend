@@ -5,11 +5,15 @@ import com.goodluck_buddy.domain.letter.exception.LetterException;
 import com.goodluck_buddy.domain.letter.exception.code.LetterErrorCode;
 import com.goodluck_buddy.domain.letter.repository.LetterRepository;
 import com.goodluck_buddy.domain.reply.converter.ReplyConverter;
+import com.goodluck_buddy.domain.reply.dto.ReplyReqDto;
 import com.goodluck_buddy.domain.reply.dto.ReplyResDto;
+import com.goodluck_buddy.domain.reply.entity.Reply;
+import com.goodluck_buddy.domain.reply.repository.ReplyRepository;
 import com.goodluck_buddy.domain.user.entity.User;
 import com.goodluck_buddy.domain.user.exception.UserException;
 import com.goodluck_buddy.domain.user.exception.code.UserErrorCode;
 import com.goodluck_buddy.domain.user.repository.UserRepository;
+import com.goodluck_buddy.global.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +25,8 @@ public class ReplyService {
 
     private final LetterRepository letterRepository;
     private final UserRepository userRepository;
+    private final ReplyRepository replyRepository;
+    private final JwtUtil jwtUtil;
 
     public List<ReplyResDto.Reply> getReplies(Long id) {
         Letter letter = letterRepository.findById(id)
@@ -31,5 +37,20 @@ public class ReplyService {
                             .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
                     return ReplyConverter.toReplyRes(r, writer.getNickname());
                 }).toList();
+    }
+
+    public void saveReply(String accessToken, Long id, ReplyReqDto.Reply dto) {
+        Long userId = findUserIdByAccessToken(accessToken);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+        Letter letter = letterRepository.findById(id)
+                .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
+        Reply reply = ReplyConverter.toReply(dto, user, letter);
+        replyRepository.save(reply);
+    }
+
+    private Long findUserIdByAccessToken(String accessToken) {
+        String token = accessToken.split(" ")[1];
+        return Long.parseLong(jwtUtil.getId(token));
     }
 }
