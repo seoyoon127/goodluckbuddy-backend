@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import tools.jackson.databind.ObjectMapper;
 
 import static org.springframework.http.HttpMethod.*;
 
@@ -24,13 +25,16 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
 
     private final String[] allowUris = {
             "/swagger-ui/**",
             "/swagger-resources/**",
             "/v3/api-docs/**",
             "/api/auth/**",
-            "/api/letters/**"
+            "/api/letters/**",
+            "/api/replies/letters/**",
+            "/api/replies/writer/**"
     };
 
     @Bean
@@ -41,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/api/letters/**").authenticated()
                         .requestMatchers(PATCH, "/api/letters/**").authenticated()
                         .requestMatchers(DELETE, "/api/letters/**").authenticated()
+                        .requestMatchers(POST, "/api/replies/letters").authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
@@ -66,7 +71,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthFilter jwtAuthFilter() {
-        return new JwtAuthFilter(jwtUtil, userRepository);
+        return new JwtAuthFilter(jwtUtil, userRepository, objectMapper);
     }
 
 }
