@@ -30,7 +30,9 @@ public class SecurityConfig {
             "/swagger-resources/**",
             "/v3/api-docs/**",
             "/api/auth/**",
-            "/api/letters/**"
+            "/api/letters/**",
+            "/api/replies/letters/**",
+            "/api/replies/writer/**"
     };
 
     @Bean
@@ -41,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/api/letters/**").authenticated()
                         .requestMatchers(PATCH, "/api/letters/**").authenticated()
                         .requestMatchers(DELETE, "/api/letters/**").authenticated()
+                        .requestMatchers(POST, "/api/replies/letters").authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

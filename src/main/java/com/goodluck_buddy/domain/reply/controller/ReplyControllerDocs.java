@@ -27,4 +27,10 @@ public interface ReplyControllerDocs {
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long id,
             @Valid @RequestBody ReplyReqDto.Reply dto);
+
+    @Operation(
+            summary = "답글 삭제",
+            description = "해당 편지에 답글을 삭제합니다."
+    )
+    ApiResponse<Void> deleteReply(@RequestHeader("Authorization") String accessToken, @PathVariable Long id);
 }

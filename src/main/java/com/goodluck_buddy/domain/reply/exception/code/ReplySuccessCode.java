@@ -14,7 +14,10 @@ public enum ReplySuccessCode implements BaseSuccessCode {
             "답글 조회에 성공했습니다."),
     REPLY_SAVE_OK(HttpStatus.OK,
             "REPLY200_2",
-            "답글 저장에 성공했습니다.");
+            "답글 저장에 성공했습니다."),
+    REPLY_DELETE_OK(HttpStatus.OK,
+            "REPLY200_3",
+            "답글 삭제에 성공했습니다.");
 
     private final HttpStatus status;
     private final String code;

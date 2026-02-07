@@ -34,4 +34,10 @@ public class ReplyController implements ReplyControllerDocs {
         replyService.saveReply(accessToken, id, dto);
         return ApiResponse.onSuccess(ReplySuccessCode.REPLY_SAVE_OK, null);
     }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteReply(@RequestHeader("Authorization") String accessToken, @PathVariable Long id) {
+        replyService.deleteReply(accessToken, id);
+        return ApiResponse.onSuccess(ReplySuccessCode.REPLY_DELETE_OK, null);
+    }
 }
