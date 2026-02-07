@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReplyLikeRepository extends JpaRepository<ReplyLike, Long> {
     boolean existsByUserAndReply(User user, Reply reply);
+
+    void deleteByUserAndReply(User user, Reply reply);
 }

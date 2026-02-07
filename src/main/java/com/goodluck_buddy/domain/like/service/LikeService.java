@@ -65,6 +65,16 @@ public class LikeService {
         }
     }
 
+    @Transactional
+    public void deleteReplyLike(String accessToken, Long replyId) {
+        User user = getUser(accessToken);
+        Reply reply = getReply(replyId);
+        if (replyLikeRepository.existsByUserAndReply(user, reply)) {
+            replyLikeRepository.deleteByUserAndReply(user, reply);
+            reply.removeLike();
+        }
+    }
+
     private Long findUserIdByAccessToken(String accessToken) {
         String token = accessToken.split(" ")[1];
         return Long.parseLong(jwtUtil.getId(token));

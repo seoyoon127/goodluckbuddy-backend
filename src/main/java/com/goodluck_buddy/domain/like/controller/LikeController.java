@@ -15,7 +15,7 @@ public class LikeController implements LikeControllerDocs {
 
     private final LikeService likeService;
 
-    @PostMapping("/letter/{letterId}/like")
+    @PostMapping("/letters/{letterId}/like")
     public ApiResponse<Void> saveLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long letterId) {
@@ -23,7 +23,7 @@ public class LikeController implements LikeControllerDocs {
         return ApiResponse.onSuccess(LikeSuccessCode.LIKE_SAVE_OK, null);
     }
 
-    @DeleteMapping("/letter/{letterId}/like")
+    @DeleteMapping("/letters/{letterId}/like")
     public ApiResponse<Void> deleteLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long letterId) {
@@ -37,5 +37,13 @@ public class LikeController implements LikeControllerDocs {
             @PathVariable Long replyId) {
         likeService.saveReplyLike(accessToken, replyId);
         return ApiResponse.onSuccess(LikeSuccessCode.LIKE_SAVE_OK, null);
+    }
+
+    @DeleteMapping("/replies/{replyId}/like")
+    public ApiResponse<Void> deleteReplyLike(
+            @RequestHeader("Authorization") String accessToken,
+            @PathVariable Long replyId) {
+        likeService.deleteReplyLike(accessToken, replyId);
+        return ApiResponse.onSuccess(LikeSuccessCode.LIKE_DELETE_OK, null);
     }
 }

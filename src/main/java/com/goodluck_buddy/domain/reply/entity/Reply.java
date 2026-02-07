@@ -39,4 +39,8 @@ public class Reply extends BaseEntity {
     public void addLike() {
         likeCount += 1;
     }
+
+    public void removeLike() {
+        likeCount -= 1;
+    }
 }
