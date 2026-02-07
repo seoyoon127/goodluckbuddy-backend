@@ -2,8 +2,6 @@ package com.goodluck_buddy.global.jwt;
 
 import com.goodluck_buddy.domain.user.entity.User;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +27,7 @@ public class JwtUtil {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.accessExpiration = Duration.ofMillis(accessExpiration);
         this.refreshExpiration = Duration.ofMillis(refreshExpiration);
+
     }
 
     // AccessToken 생성
@@ -51,16 +50,6 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    // 토큰 유효성 확인
-    public boolean isValid(String token) {
-        try {
-            getClaims(token);
-            return true;
-        } catch (JwtException e) {
-            return false;
-        }
-    }
-
     // 토큰 생성
     private String createToken(User user, Duration expiration) {
         Instant now = Instant.now();
@@ -74,11 +63,13 @@ public class JwtUtil {
     }
 
     // 토큰 정보 가져오기
-    private Jws<Claims> getClaims(String token) throws JwtException {
+    public Claims getClaims(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .clockSkewSeconds(60)
                 .build()
-                .parseSignedClaims(token);
+                .parseSignedClaims(token)
+                .getPayload();
     }
+
 }
