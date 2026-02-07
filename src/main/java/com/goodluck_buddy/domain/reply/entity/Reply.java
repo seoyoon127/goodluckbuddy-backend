@@ -35,4 +35,8 @@ public class Reply extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public void addLike() {
+        likeCount += 1;
+    }
 }

@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/letter")
+@RequestMapping("/api")
 @Tag(name = "Like", description = "좋아요 관련 API")
 public class LikeController implements LikeControllerDocs {
 
     private final LikeService likeService;
 
-    @PostMapping("/{letterId}/like")
+    @PostMapping("/letter/{letterId}/like")
     public ApiResponse<Void> saveLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long letterId) {
@@ -23,11 +23,19 @@ public class LikeController implements LikeControllerDocs {
         return ApiResponse.onSuccess(LikeSuccessCode.LIKE_SAVE_OK, null);
     }
 
-    @DeleteMapping("/{letterId}/like")
+    @DeleteMapping("/letter/{letterId}/like")
     public ApiResponse<Void> deleteLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long letterId) {
         likeService.deleteLike(accessToken, letterId);
         return ApiResponse.onSuccess(LikeSuccessCode.LIKE_DELETE_OK, null);
+    }
+
+    @PostMapping("/replies/{replyId}/like")
+    public ApiResponse<Void> saveReplyLike(
+            @RequestHeader("Authorization") String accessToken,
+            @PathVariable Long replyId) {
+        likeService.saveReplyLike(accessToken, replyId);
+        return ApiResponse.onSuccess(LikeSuccessCode.LIKE_SAVE_OK, null);
     }
 }
