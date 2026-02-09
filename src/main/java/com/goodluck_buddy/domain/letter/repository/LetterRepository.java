@@ -14,8 +14,6 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
 
     @Query("""
             SELECT l from Letter l
-            LEFT JOIN FETCH l.letterInfos li
-            LEFT JOIN FETCH li.info
             WHERE (:category IS NULL or l.categories.name = :category)
             AND (:parentCategory IS NULL or l.categories.parentCategory = :parentCategory)
             AND (:userId IS NULL or l.writerId = :userId)
@@ -25,6 +23,37 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
             @Param("parentCategory") Category parentCategory,
             @Param("userId") Long userId,
             Sort sort);
+
+    @Query("""
+            SELECT l from Letter l
+            WHERE (:category IS NULL or l.categories.name = :category)
+            AND (:parentCategory IS NULL or l.categories.parentCategory = :parentCategory)
+            AND EXISTS (
+                 SELECT 1 FROM Like lk
+                 WHERE lk.letter = l
+                   AND lk.user.id = :userId
+             )""")
+    List<Letter> findAllByFiltersWithLike(
+            @Param("category") String category,
+            @Param("parentCategory") Category parentCategory,
+            @Param("userId") Long userId,
+            Sort sort);
+
+    @Query("""
+            SELECT l from Letter l
+            LEFT JOIN FETCH l.likes li
+            WHERE EXISTS (
+                 SELECT 1 FROM User user
+                 WHERE user.gender = li.user.gender
+                   AND (
+                       (YEAR(CURRENT_DATE) - YEAR(user.birth)) / 10
+                       =
+                       (YEAR(CURRENT_DATE) - YEAR(li.user.birth)) / 10
+                   )
+             )
+             ORDER BY l.likeCount DESC
+            """)
+    List<Letter> findRecommendLetters(@Param("userId") Long userId);
 
     Optional<Letter> findById(Long letterId);
 

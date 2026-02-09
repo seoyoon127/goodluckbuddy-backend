@@ -7,7 +7,9 @@ import com.goodluck_buddy.domain.auth.exception.code.AuthErrorCode;
 import com.goodluck_buddy.domain.auth.repository.RefreshTokenRepository;
 import com.goodluck_buddy.domain.user.entity.User;
 import com.goodluck_buddy.domain.user.repository.UserRepository;
+import com.goodluck_buddy.global.jwt.CookieUtil;
 import com.goodluck_buddy.global.jwt.JwtUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,8 +45,7 @@ public class TokenService {
 
     // 토큰 재발급
     @Transactional
-    public TokenDto.Tokens reissueTokens(TokenDto.RefreshToken dto) {
-        String refreshTokenValue = dto.getRefreshToken();
+    public TokenDto.AccessToken reissueTokens(String refreshTokenValue, HttpServletResponse response) {
         RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(refreshTokenValue)
                 .orElseThrow(() -> new AuthException(AuthErrorCode.TOKEN_NOT_FOUND));
 
@@ -59,13 +60,13 @@ public class TokenService {
         String accessToken = jwtUtil.createAccessToken(user);
 
         refreshToken.update(newRefreshTokenValue, LocalDateTime.now().plusDays(1));
+        CookieUtil.addCookie(response, "refreshToken", newRefreshTokenValue);
 
-        return new TokenDto.Tokens(accessToken, newRefreshTokenValue);
+        return new TokenDto.AccessToken(accessToken);
     }
 
     // 로그아웃
-    public void logout(TokenDto.RefreshToken dto) {
-        String refreshTokenValue = dto.getRefreshToken();
+    public void logout(String refreshTokenValue) {
         RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(refreshTokenValue)
                 .orElseThrow(() -> new AuthException(AuthErrorCode.TOKEN_NOT_FOUND));
         refreshTokenRepository.delete(refreshToken);

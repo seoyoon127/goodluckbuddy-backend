@@ -74,4 +74,21 @@ public interface LetterControllerDocs {
             @RequestParam(required = false) Category parentCategory,
             @RequestParam SortType sort,
             @PathVariable Long userId);
+
+    @Operation(
+            summary = "좋아요한 편지 목록 조회",
+            description = "내가 좋아요한 편지 목록을 조회합니다."
+    )
+    ApiResponse<List<LetterResDto.Letter>> getLikeLetters(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Category parentCategory,
+            @RequestParam SortType sort);
+
+    @Operation(
+            summary = "추천 편지 목록 조회",
+            description = "추천 편지 목록을 조회합니다."
+    )
+    ApiResponse<LetterResDto.RecommendLetter> getRecommendLetters(
+            @RequestHeader("Authorization") String accessToken);
 }

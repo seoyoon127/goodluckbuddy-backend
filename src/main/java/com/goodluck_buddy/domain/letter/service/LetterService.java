@@ -25,6 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -73,6 +74,38 @@ public class LetterService {
                     return LetterConverter.toLetterRes(letter, writer.getNickname());
                 })
                 .toList();
+    }
+
+    public List<LetterResDto.Letter> getLikeLetters(String category, Category parentCategory, Long id, SortType sortType) {
+        if (sortType == null) {
+            throw new LetterException(LetterErrorCode.NO_SORT);
+        }
+        Sort sort = switch (sortType) {
+            case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
+            case LIKE -> Sort.by(Sort.Direction.DESC, "likeCount");
+        };
+        List<Letter> letters = letterRepository.findAllByFiltersWithLike(category, parentCategory, id, sort);
+        return letters.stream()
+                .map(letter -> {
+                    User writer = userRepository.findById(letter.getWriterId())
+                            .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+                    return LetterConverter.toLetterRes(letter, writer.getNickname());
+                })
+                .toList();
+    }
+
+    public LetterResDto.RecommendLetter getRecommendLetters(String accessToken) {
+        Long userId = findUserIdByAccessToken(accessToken);
+        List<Letter> letters = letterRepository.findRecommendLetters(userId);
+        List<LetterResDto.Letter> letterRes = letters.stream()
+                .map(letter -> {
+                    User writer = userRepository.findById(letter.getWriterId())
+                            .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+                    return LetterConverter.toLetterRes(letter, writer.getNickname());
+                })
+                .toList();
+
+        return LetterConverter.toRecommendLetterRes(letterRes, getPhrase(userId));
     }
 
     @Transactional(readOnly = true)
@@ -134,5 +167,21 @@ public class LetterService {
     private Long findUserIdByAccessToken(String accessToken) {
         String token = accessToken.split(" ")[1];
         return Long.parseLong(jwtUtil.getId(token));
+    }
+
+    private String getPhrase(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+        int ageGroup =
+                (LocalDate.now().getYear() - user.getBirth().getYear()) / 10 * 10;
+        String gender = switch (user.getGender()) {
+            case MALE -> "남성";
+            case FEMALE -> "여성";
+            case NONE -> null;
+        };
+        if (gender != null) {
+            return ageGroup + "대 " + gender + "이 좋아요를 많이한 편지예요.";
+        }
+        return ageGroup + "대가 좋아요를 많이한 편지예요";
     }
 }

@@ -69,4 +69,14 @@ public class LetterConverter {
                 .infos(infos.stream().map(i -> i.getName()).toList())
                 .build();
     }
+
+    public static LetterResDto.RecommendLetter toRecommendLetterRes(
+            List<LetterResDto.Letter> letters,
+            String phrase
+    ) {
+        return LetterResDto.RecommendLetter.builder()
+                .letters(letters)
+                .phrase(phrase)
+                .build();
+    }
 }
