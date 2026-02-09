@@ -16,7 +16,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.Duration;
 
 @Component
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
 
         TokenDto.Tokens tokenDto = tokenService.issueTokens(user);
-        CookieUtil.addCookie(response, "refreshToken", tokenDto.getRefreshToken(), (int) Duration.ofDays(1).toSeconds());
+        CookieUtil.addCookie(response, "refreshToken", tokenDto.getRefreshToken());
 
         response.sendRedirect(
                 "http://localhost:3000/oauth/success?token=" + tokenDto.getAccessToken()
