@@ -26,6 +26,23 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
             @Param("userId") Long userId,
             Sort sort);
 
+    @Query("""
+            SELECT l from Letter l
+            LEFT JOIN FETCH l.letterInfos li
+            LEFT JOIN FETCH li.info
+            WHERE (:category IS NULL or l.categories.name = :category)
+            AND (:parentCategory IS NULL or l.categories.parentCategory = :parentCategory)
+            AND EXISTS (
+                 SELECT 1 FROM Like lk
+                 WHERE lk.letter = l
+                   AND lk.user.id = :userId
+             )""")
+    List<Letter> findAllByFiltersWithLike(
+            @Param("category") String category,
+            @Param("parentCategory") Category parentCategory,
+            @Param("userId") Long userId,
+            Sort sort);
+
     Optional<Letter> findById(Long letterId);
 
     Optional<List<Letter>> findByWriterId(Long writerId);

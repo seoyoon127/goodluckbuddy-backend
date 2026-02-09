@@ -86,4 +86,15 @@ public class LetterController implements LetterControllerDocs {
         List<LetterResDto.Letter> reponse = letterService.getLetters(category, parentCategory, userId, sort);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
     }
+
+    @GetMapping("/like")
+    public ApiResponse<List<LetterResDto.Letter>> getLikeLetters(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Category parentCategory,
+            @RequestParam SortType sort) {
+        Long userId = parseLong(jwtUtil.getId(accessToken.split(" ")[1]));
+        List<LetterResDto.Letter> reponse = letterService.getLikeLetters(category, parentCategory, userId, sort);
+        return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
+    }
 }

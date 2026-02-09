@@ -75,6 +75,24 @@ public class LetterService {
                 .toList();
     }
 
+    public List<LetterResDto.Letter> getLikeLetters(String category, Category parentCategory, Long id, SortType sortType) {
+        if (sortType == null) {
+            throw new LetterException(LetterErrorCode.NO_SORT);
+        }
+        Sort sort = switch (sortType) {
+            case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
+            case LIKE -> Sort.by(Sort.Direction.DESC, "likeCount");
+        };
+        List<Letter> letters = letterRepository.findAllByFiltersWithLike(category, parentCategory, id, sort);
+        return letters.stream()
+                .map(letter -> {
+                    User writer = userRepository.findById(letter.getWriterId())
+                            .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+                    return LetterConverter.toLetterRes(letter, writer.getNickname());
+                })
+                .toList();
+    }
+
     @Transactional(readOnly = true)
     public LetterResDto.LetterDetail getLetter(Long letterId, Long userId) {
         Letter letter = letterRepository.findById(letterId)
