@@ -26,7 +26,10 @@ public enum GeneralErrorCode implements BaseErrorCode {
     INVALID_ENUM_VALUE(
             HttpStatus.BAD_REQUEST,
             "COMMON400_2",
-            "요청 값이 올바르지 않습니다.");
+            "요청 값이 올바르지 않습니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED,
+            "AUTH401_2",
+            "만료된 토큰입니다");
 
     private final HttpStatus status;
     private final String code;

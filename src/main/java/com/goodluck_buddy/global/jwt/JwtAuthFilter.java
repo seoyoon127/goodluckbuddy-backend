@@ -1,9 +1,15 @@
 package com.goodluck_buddy.global.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goodluck_buddy.domain.user.entity.User;
 import com.goodluck_buddy.domain.user.exception.UserException;
 import com.goodluck_buddy.domain.user.exception.code.UserErrorCode;
 import com.goodluck_buddy.domain.user.repository.UserRepository;
+import com.goodluck_buddy.global.code.GeneralErrorCode;
+import com.goodluck_buddy.global.response.ApiResponse;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +27,7 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(
@@ -38,8 +45,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // Bearer이면 추출
         token = token.replace("Bearer ", "");
         // AccessToken 검증하기: 올바른 토큰이면
-        if (jwtUtil.isValid(token)) {
-            // 토큰에서 이메일 추출
+        try {
+            Claims claims = jwtUtil.getClaims(token);
             Long userId = Long.parseLong(jwtUtil.getId(token));
             // 인증 객체 생성: 이메일로 찾아온 뒤, 인증 객체 생성
             User user = userRepository.findById(userId)
@@ -51,6 +58,28 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             );
             // 인증 완료 후 SecurityContextHolder에 넣기
             SecurityContextHolder.getContext().setAuthentication(auth);
+        } catch (ExpiredJwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+
+            ApiResponse<Void> body =
+                    ApiResponse.onFailure(GeneralErrorCode.EXPIRED_TOKEN, null);
+
+            response.getWriter().write(
+                    objectMapper.writeValueAsString(body)
+            );
+            return;
+        } catch (JwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+
+            ApiResponse<Void> body =
+                    ApiResponse.onFailure(GeneralErrorCode.UNAUTHORIZED, null);
+
+            response.getWriter().write(
+                    objectMapper.writeValueAsString(body)
+            );
+            return;
         }
         filterChain.doFilter(request, response);
     }

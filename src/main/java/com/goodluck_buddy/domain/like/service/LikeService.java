@@ -5,8 +5,15 @@ import com.goodluck_buddy.domain.letter.exception.LetterException;
 import com.goodluck_buddy.domain.letter.exception.code.LetterErrorCode;
 import com.goodluck_buddy.domain.letter.repository.LetterRepository;
 import com.goodluck_buddy.domain.like.converter.LikeConverter;
+import com.goodluck_buddy.domain.like.dto.LikeResDto;
 import com.goodluck_buddy.domain.like.entity.Like;
+import com.goodluck_buddy.domain.like.entity.ReplyLike;
 import com.goodluck_buddy.domain.like.repository.LikeRepository;
+import com.goodluck_buddy.domain.like.repository.ReplyLikeRepository;
+import com.goodluck_buddy.domain.reply.entity.Reply;
+import com.goodluck_buddy.domain.reply.exception.ReplyException;
+import com.goodluck_buddy.domain.reply.exception.code.ReplyErrorCode;
+import com.goodluck_buddy.domain.reply.repository.ReplyRepository;
 import com.goodluck_buddy.domain.user.entity.User;
 import com.goodluck_buddy.domain.user.exception.UserException;
 import com.goodluck_buddy.domain.user.exception.code.UserErrorCode;
@@ -23,27 +30,54 @@ public class LikeService {
     private final UserRepository userRepository;
     private final LetterRepository letterRepository;
     private final LikeRepository likeRepository;
+    private final ReplyRepository replyRepository;
+    private final ReplyLikeRepository replyLikeRepository;
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public void saveLike(String accessToken, Long letterId) {
+    public LikeResDto.Likes saveLike(String accessToken, Long letterId) {
         User user = getUser(accessToken);
         Letter letter = getLetter(letterId);
-        Like like = LikeConverter.toLike(letter, user);
         if (!likeRepository.existsByUserAndLetter(user, letter)) {
+            Like like = LikeConverter.toLike(letter, user);
             likeRepository.save(like);
             letter.addLike();
         }
+        return LikeConverter.toLikeRes(letter.getLikeCount(), true);
     }
 
     @Transactional
-    public void deleteLike(String accessToken, Long letterId) {
+    public LikeResDto.Likes deleteLike(String accessToken, Long letterId) {
         User user = getUser(accessToken);
         Letter letter = getLetter(letterId);
         if (likeRepository.existsByUserAndLetter(user, letter)) {
             likeRepository.deleteByUserAndLetter(user, letter);
             letter.removeLike();
         }
+        return LikeConverter.toLikeRes(letter.getLikeCount(), false);
+    }
+
+    @Transactional
+    public LikeResDto.Likes saveReplyLike(String accessToken, Long replyId) {
+        User user = getUser(accessToken);
+        Reply reply = getReply(replyId);
+        if (!replyLikeRepository.existsByUserAndReply(user, reply)) {
+            ReplyLike replyLike = LikeConverter.toReplyLike(reply, user);
+            replyLikeRepository.save(replyLike);
+            reply.addLike();
+        }
+        return LikeConverter.toLikeRes(reply.getLikeCount(), true);
+    }
+
+    @Transactional
+    public LikeResDto.Likes deleteReplyLike(String accessToken, Long replyId) {
+        User user = getUser(accessToken);
+        Reply reply = getReply(replyId);
+        if (replyLikeRepository.existsByUserAndReply(user, reply)) {
+            replyLikeRepository.deleteByUserAndReply(user, reply);
+            reply.removeLike();
+        }
+        return LikeConverter.toLikeRes(reply.getLikeCount(), false);
     }
 
     private Long findUserIdByAccessToken(String accessToken) {
@@ -60,5 +94,10 @@ public class LikeService {
     private Letter getLetter(Long letterId) {
         return letterRepository.findById(letterId)
                 .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
+    }
+
+    private Reply getReply(Long replyId) {
+        return replyRepository.findById(replyId)
+                .orElseThrow(() -> new ReplyException(ReplyErrorCode.REPLY_NOT_FOUND));
     }
 }
