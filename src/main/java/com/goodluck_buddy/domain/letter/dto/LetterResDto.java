@@ -22,6 +22,13 @@ public class LetterResDto {
 
     @Getter
     @Builder
+    public static class RecommendLetter {
+        private String phrase;
+        private List<LetterResDto.Letter> letters;
+    }
+
+    @Getter
+    @Builder
     public static class LetterDetail {
         private Long letterId;
         private String writerName;

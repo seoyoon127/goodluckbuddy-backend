@@ -44,6 +44,9 @@ public class SecurityConfig {
                         .requestMatchers(PATCH, "/api/letters/**").authenticated()
                         .requestMatchers(DELETE, "/api/letters/**").authenticated()
                         .requestMatchers(POST, "/api/replies/letters").authenticated()
+                        .requestMatchers(GET, "/api/letters/me").authenticated()
+                        .requestMatchers(GET, "/api/letters/like").authenticated()
+                        .requestMatchers(GET, "/api/letters/recommend").authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

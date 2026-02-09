@@ -97,4 +97,11 @@ public class LetterController implements LetterControllerDocs {
         List<LetterResDto.Letter> reponse = letterService.getLikeLetters(category, parentCategory, userId, sort);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
     }
+
+    @GetMapping("/recommend")
+    public ApiResponse<LetterResDto.RecommendLetter> getRecommendLetters(
+            @RequestHeader("Authorization") String accessToken) {
+        LetterResDto.RecommendLetter reponse = letterService.getRecommendLetters(accessToken);
+        return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
+    }
 }

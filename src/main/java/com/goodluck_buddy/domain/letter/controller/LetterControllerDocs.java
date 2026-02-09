@@ -84,4 +84,11 @@ public interface LetterControllerDocs {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) Category parentCategory,
             @RequestParam SortType sort);
+
+    @Operation(
+            summary = "추천 편지 목록 조회",
+            description = "추천 편지 목록을 조회합니다."
+    )
+    ApiResponse<LetterResDto.RecommendLetter> getRecommendLetters(
+            @RequestHeader("Authorization") String accessToken);
 }
