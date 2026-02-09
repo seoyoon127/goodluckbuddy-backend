@@ -5,6 +5,7 @@ import com.goodluck_buddy.domain.letter.exception.LetterException;
 import com.goodluck_buddy.domain.letter.exception.code.LetterErrorCode;
 import com.goodluck_buddy.domain.letter.repository.LetterRepository;
 import com.goodluck_buddy.domain.like.converter.LikeConverter;
+import com.goodluck_buddy.domain.like.dto.LikeResDto;
 import com.goodluck_buddy.domain.like.entity.Like;
 import com.goodluck_buddy.domain.like.entity.ReplyLike;
 import com.goodluck_buddy.domain.like.repository.LikeRepository;
@@ -34,7 +35,7 @@ public class LikeService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public void saveLike(String accessToken, Long letterId) {
+    public LikeResDto.Likes saveLike(String accessToken, Long letterId) {
         User user = getUser(accessToken);
         Letter letter = getLetter(letterId);
         if (!likeRepository.existsByUserAndLetter(user, letter)) {
@@ -42,20 +43,22 @@ public class LikeService {
             likeRepository.save(like);
             letter.addLike();
         }
+        return LikeConverter.toLikeRes(letter.getLikeCount(), true);
     }
 
     @Transactional
-    public void deleteLike(String accessToken, Long letterId) {
+    public LikeResDto.Likes deleteLike(String accessToken, Long letterId) {
         User user = getUser(accessToken);
         Letter letter = getLetter(letterId);
         if (likeRepository.existsByUserAndLetter(user, letter)) {
             likeRepository.deleteByUserAndLetter(user, letter);
             letter.removeLike();
         }
+        return LikeConverter.toLikeRes(letter.getLikeCount(), false);
     }
 
     @Transactional
-    public void saveReplyLike(String accessToken, Long replyId) {
+    public LikeResDto.Likes saveReplyLike(String accessToken, Long replyId) {
         User user = getUser(accessToken);
         Reply reply = getReply(replyId);
         if (!replyLikeRepository.existsByUserAndReply(user, reply)) {
@@ -63,16 +66,18 @@ public class LikeService {
             replyLikeRepository.save(replyLike);
             reply.addLike();
         }
+        return LikeConverter.toLikeRes(reply.getLikeCount(), true);
     }
 
     @Transactional
-    public void deleteReplyLike(String accessToken, Long replyId) {
+    public LikeResDto.Likes deleteReplyLike(String accessToken, Long replyId) {
         User user = getUser(accessToken);
         Reply reply = getReply(replyId);
         if (replyLikeRepository.existsByUserAndReply(user, reply)) {
             replyLikeRepository.deleteByUserAndReply(user, reply);
             reply.removeLike();
         }
+        return LikeConverter.toLikeRes(reply.getLikeCount(), false);
     }
 
     private Long findUserIdByAccessToken(String accessToken) {

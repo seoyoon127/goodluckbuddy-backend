@@ -56,10 +56,10 @@ public class Letter extends BaseEntity {
                 .toList();
     }
 
-    @OneToMany(mappedBy = "letter", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "letter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "letter")
+    @OneToMany(mappedBy = "letter", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reply> replies = new ArrayList<>();
 
     public void updateTitle(String title) {

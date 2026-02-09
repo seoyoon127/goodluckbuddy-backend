@@ -13,7 +13,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "reply_likes")
+@Table(
+        name = "reply_likes",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_reply_like_user_reply",
+                        columnNames = {"user_id", "reply_id"}
+                )
+        }
+)
 public class ReplyLike {
 
     @Id

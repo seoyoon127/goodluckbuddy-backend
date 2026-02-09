@@ -1,5 +1,6 @@
 package com.goodluck_buddy.domain.like.controller;
 
+import com.goodluck_buddy.domain.like.dto.LikeResDto;
 import com.goodluck_buddy.domain.like.exception.code.LikeSuccessCode;
 import com.goodluck_buddy.domain.like.service.LikeService;
 import com.goodluck_buddy.global.response.ApiResponse;
@@ -16,34 +17,34 @@ public class LikeController implements LikeControllerDocs {
     private final LikeService likeService;
 
     @PostMapping("/letters/{letterId}/like")
-    public ApiResponse<Void> saveLike(
+    public ApiResponse<LikeResDto.Likes> saveLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long letterId) {
-        likeService.saveLike(accessToken, letterId);
-        return ApiResponse.onSuccess(LikeSuccessCode.LIKE_SAVE_OK, null);
+        LikeResDto.Likes response = likeService.saveLike(accessToken, letterId);
+        return ApiResponse.onSuccess(LikeSuccessCode.LIKE_SAVE_OK, response);
     }
 
     @DeleteMapping("/letters/{letterId}/like")
-    public ApiResponse<Void> deleteLike(
+    public ApiResponse<LikeResDto.Likes> deleteLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long letterId) {
-        likeService.deleteLike(accessToken, letterId);
-        return ApiResponse.onSuccess(LikeSuccessCode.LIKE_DELETE_OK, null);
+        LikeResDto.Likes response = likeService.deleteLike(accessToken, letterId);
+        return ApiResponse.onSuccess(LikeSuccessCode.LIKE_DELETE_OK, response);
     }
 
     @PostMapping("/replies/{replyId}/like")
-    public ApiResponse<Void> saveReplyLike(
+    public ApiResponse<LikeResDto.Likes> saveReplyLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long replyId) {
-        likeService.saveReplyLike(accessToken, replyId);
-        return ApiResponse.onSuccess(LikeSuccessCode.LIKE_SAVE_OK, null);
+        LikeResDto.Likes response = likeService.saveReplyLike(accessToken, replyId);
+        return ApiResponse.onSuccess(LikeSuccessCode.LIKE_SAVE_OK, response);
     }
 
     @DeleteMapping("/replies/{replyId}/like")
-    public ApiResponse<Void> deleteReplyLike(
+    public ApiResponse<LikeResDto.Likes> deleteReplyLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long replyId) {
-        likeService.deleteReplyLike(accessToken, replyId);
-        return ApiResponse.onSuccess(LikeSuccessCode.LIKE_DELETE_OK, null);
+        LikeResDto.Likes response = likeService.deleteReplyLike(accessToken, replyId);
+        return ApiResponse.onSuccess(LikeSuccessCode.LIKE_DELETE_OK, response);
     }
 }

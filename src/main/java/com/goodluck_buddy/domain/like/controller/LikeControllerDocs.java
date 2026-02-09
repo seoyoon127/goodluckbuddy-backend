@@ -1,5 +1,6 @@
 package com.goodluck_buddy.domain.like.controller;
 
+import com.goodluck_buddy.domain.like.dto.LikeResDto;
 import com.goodluck_buddy.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +12,7 @@ public interface LikeControllerDocs {
             summary = "편지 좋아요 선택",
             description = "해당 편지의 좋아요를 1 증가시킨다."
     )
-    ApiResponse<Void> saveLike(
+    ApiResponse<LikeResDto.Likes> saveLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long letterId);
 
@@ -19,7 +20,7 @@ public interface LikeControllerDocs {
             summary = "편지 좋아요 취소",
             description = "해당 편지의 좋아요를 삭제한다."
     )
-    ApiResponse<Void> deleteLike(
+    ApiResponse<LikeResDto.Likes> deleteLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long letterId);
 
@@ -27,7 +28,7 @@ public interface LikeControllerDocs {
             summary = "답글 좋아요 선택",
             description = "해당 답글의 좋아요를 1 증가시킨다."
     )
-    ApiResponse<Void> saveReplyLike(
+    ApiResponse<LikeResDto.Likes> saveReplyLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long replyId);
 
@@ -35,7 +36,7 @@ public interface LikeControllerDocs {
             summary = "답글 좋아요 취소",
             description = "해당 답글의 좋아요를 삭제한다."
     )
-    ApiResponse<Void> deleteReplyLike(
+    ApiResponse<LikeResDto.Likes> deleteReplyLike(
             @RequestHeader("Authorization") String accessToken,
             @PathVariable Long replyId);
 }

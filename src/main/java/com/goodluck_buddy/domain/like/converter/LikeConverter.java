@@ -1,6 +1,7 @@
 package com.goodluck_buddy.domain.like.converter;
 
 import com.goodluck_buddy.domain.letter.entity.Letter;
+import com.goodluck_buddy.domain.like.dto.LikeResDto;
 import com.goodluck_buddy.domain.like.entity.Like;
 import com.goodluck_buddy.domain.like.entity.ReplyLike;
 import com.goodluck_buddy.domain.reply.entity.Reply;
@@ -26,6 +27,16 @@ public class LikeConverter {
                 .reply(reply)
                 .user(user)
                 .likes(true)
+                .build();
+    }
+
+    public static LikeResDto.Likes toLikeRes(
+            Long likeCount,
+            boolean likes
+    ) {
+        return LikeResDto.Likes.builder()
+                .likeCount(likeCount)
+                .likes(likes)
                 .build();
     }
 }
