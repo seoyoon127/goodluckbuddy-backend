@@ -67,16 +67,18 @@ jobs:
           chmod 600 glbd.pem
           jar_file=$(find build/libs -name '*.jar' ! -name '*plain.jar' | head -n 1)
           scp -i glbd.pem -o StrictHostKeyChecking=no "$jar_file" $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/umc7thServer.jar
+          
           ssh -i glbd.pem -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "
-          pgrep java | xargs -r kill -15  # 기존 Java 프로세스 종료
+          pgrep java | xargs -r kill -15
           sleep 10
-          # nohup으로 실행할 때 -D 옵션으로 직접 주입 (변수 이름 정확히 매칭)
+          
           nohup java -jar \
-            -Dspring.datasource.url='$DB_URL' \
+            -Dspring.datasource.url=\"$DB_URL\" \
             -Dspring.datasource.username=\"$DB_USERNAME\" \
+            -Dspring.datasource.password=\"$DB_PASSWORD\" \
             -Djwt.token.secretKey=\"$JWT_TOKEN_SECRETKEY\" \
             -Djwt.token.expiration.access=1800000 \
-            -Dspring.datasource.password=\"$DB_PASSWORD\" \
+            \
             -Dspring.security.oauth2.client.registration.google.client-id=\"$GOOGLE_CLIENT_ID\" \
             -Dspring.security.oauth2.client.registration.google.client-secret=\"$GOOGLE_CLIENT_SECRET\" \
             \
@@ -85,5 +87,5 @@ jobs:
             -Dspring.security.oauth2.client.registration.kakao.authorization-grant-type=authorization_code \
             -Dspring.security.oauth2.client.registration.kakao.client-authentication-method=client_secret_post \
             \
-        /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
-        "
+            /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
+          "
