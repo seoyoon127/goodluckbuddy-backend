@@ -72,7 +72,7 @@ jobs:
           sleep 10
           # nohup으로 실행할 때 -D 옵션으로 직접 주입 (변수 이름 정확히 매칭)
           nohup java -jar \
-            -Dspring.datasource.url=\"$DB_URL\" \
+            -Dspring.datasource.url='$DB_URL' \
             -Dspring.datasource.username=\"$DB_USERNAME\" \
             -Djwt.token.secretKey=\"$JWT_TOKEN_SECRETKEY\" \
             -Djwt.token.expiration.access=1800000 \
