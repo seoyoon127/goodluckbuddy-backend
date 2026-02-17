@@ -68,12 +68,13 @@ jobs:
           ssh -i glbd.pem -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "
           pgrep java | xargs -r kill -15  # 기존 Java 프로세스 종료
           sleep 10
-          # 환경변수 함께 전달 후 애플리케이션 실행
-          export SECRET_KEY=\"$JWT_TOKEN_SECRETKEY\"
-          export DB_PASSWORD=\"$DB_PASSWORD\"
-          export GOOGLE_CLIENT_ID=\"$GOOGLE_CLIENT_ID\"
-          export GOOGLE_CLIENT_SECRET=\"$GOOGLE_CLIENT_SECRET\"
-          export KAKAO_REST_KEY=\"$KAKAO_REST_KEY\"
-          export KAKAO_CLIENT_SECRET=\"$KAKAO_CLIENT_SECRET\"
-          nohup java -jar /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
+          # nohup으로 실행할 때 -D 옵션으로 직접 주입 (변수 이름 정확히 매칭)
+          nohup java -jar \
+            -Djwt.token.secretKey=\"$JWT_TOKEN_SECRETKEY\" \
+            -Dspring.datasource.password=\"$DB_PASSWORD\" \
+            -Dgoogle.client.id=\"$GOOGLE_CLIENT_ID\" \
+            -Dgoogle.client.secret=\"$GOOGLE_CLIENT_SECRET\" \
+            -Dkakao.rest.key=\"$KAKAO_REST_KEY\" \
+            -Dkakao.client.secret=\"$KAKAO_CLIENT_SECRET\" \
+            /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
           "
