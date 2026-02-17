@@ -55,13 +55,43 @@ jobs:
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
-          echo "$EC2_SSH_KEY" > private_key.pem
-          chmod 600 private_key.pem
+          echo "$EC2_SSH_KEY" | base64 -d > glbd.pem
+          chmod 600 glbd.pem
+          
+          # 1. 빌드된 jar 파일 전송
           jar_file=$(find build/libs -name '*.jar' ! -name '*plain.jar' | head -n 1)
-          scp -i private_key.pem -o StrictHostKeyChecking=no "$jar_file" $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/umc7thServer.jar
-          ssh -i private_key.pem -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "
-            pgrep java | xargs -r kill -15  # 기존에 실행 중인 Java 프로세스 종료
-            sleep 10
-            nohup java -jar /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &  # 새 버전 애플리케이션 실행
+          scp -i glbd.pem -o StrictHostKeyChecking=no "$jar_file" $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/umc7thServer.jar
+          
+          # 2. 서버 실행 (복잡한 스크립트 파일 생성 대신, SSH 명령어로 직접 실행)
+          # 변수 주입 방식을 '환경 변수(export)'로 통일해서 따옴표 문제를 피했습니다.
+          ssh -i glbd.pem -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "
+            pgrep java | xargs -r kill -15
+            sleep 5
+          
+            # 환경변수 설정 후 실행 (이 방식이 오타 확률이 가장 적습니다)
+            export DB_URL='${{ secrets.DB_URL }}'
+            export DB_USERNAME='${{ secrets.DB_USERNAME }}'
+            export DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
+            export JWT_TOKEN_SECRETKEY='${{ secrets.JWT_TOKEN_SECRETKEY }}'
+            export GOOGLE_CLIENT_ID='${{ secrets.GOOGLE_CLIENT_ID }}'
+            export GOOGLE_CLIENT_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET }}'
+            export KAKAO_CLIENT_ID='${{ secrets.KAKAO_REST_KEY }}'
+            export KAKAO_CLIENT_SECRET='${{ secrets.KAKAO_CLIENT_SECRET }}'
+          
+            nohup java -jar \
+              -Dspring.datasource.url=\"\$DB_URL\" \
+              -Dspring.datasource.username=\"\$DB_USERNAME\" \
+              -Dspring.datasource.password=\"\$DB_PASSWORD\" \
+              -Djwt.token.secretKey=\"\$JWT_TOKEN_SECRETKEY\" \
+              -Dspring.security.oauth2.client.registration.google.client-id=\"\$GOOGLE_CLIENT_ID\" \
+              -Dspring.security.oauth2.client.registration.google.client-secret=\"\$GOOGLE_CLIENT_SECRET\" \
+              -Dspring.security.oauth2.client.registration.kakao.client-id=\"\$KAKAO_CLIENT_ID\" \
+              -Dspring.security.oauth2.client.registration.kakao.client-secret=\"\$KAKAO_CLIENT_SECRET\" \
+              -Dspring.security.oauth2.client.registration.kakao.authorization-grant-type=authorization_code \
+              -Dspring.security.oauth2.client.registration.kakao.client-authentication-method=client_secret_post \
+              -Dspring.security.oauth2.client.provider.kakao.authorization-uri=https://kauth.kakao.com/oauth/authorize \
+              -Dspring.security.oauth2.client.provider.kakao.token-uri=https://kauth.kakao.com/oauth/token \
+              -Dspring.security.oauth2.client.provider.kakao.user-info-uri=https://kapi.kakao.com/v2/user/me \
+              -Dspring.security.oauth2.client.provider.kakao.user-name-attribute=id \
+              /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
           "
-          rm -f private_key.pem  # 민감한 정보 삭제
