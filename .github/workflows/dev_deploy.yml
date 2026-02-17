@@ -55,7 +55,7 @@ jobs:
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
         run: |
-          echo "$EC2_SSH_KEY_B64" | base64 -d > glbd.pem
+          echo "$EC2_SSH_KEY" | base64 -d > glbd.pem
           chmod 600 glbd.pem
           jar_file=$(find build/libs -name '*.jar' ! -name '*plain.jar' | head -n 1)
           scp -i glbd.pem -o StrictHostKeyChecking=no "$jar_file" $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/umc7thServer.jar
