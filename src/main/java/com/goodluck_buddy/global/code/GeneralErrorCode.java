@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum GeneralErrorCode implements BaseErrorCode{
+public enum GeneralErrorCode implements BaseErrorCode {
 
     BAD_REQUEST(HttpStatus.BAD_REQUEST,
             "COMMON400_1",
@@ -23,7 +23,13 @@ public enum GeneralErrorCode implements BaseErrorCode{
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,
             "COMMON500_1",
             "예기치 않은 서버 에러가 발생했습니다."),
-    ;
+    INVALID_ENUM_VALUE(
+            HttpStatus.BAD_REQUEST,
+            "COMMON400_2",
+            "요청 값이 올바르지 않습니다."),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED,
+            "AUTH401_2",
+            "만료된 토큰입니다");
 
     private final HttpStatus status;
     private final String code;
