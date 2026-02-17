@@ -66,8 +66,14 @@ jobs:
           jar_file=$(find build/libs -name '*.jar' ! -name '*plain.jar' | head -n 1)
           scp -i glbd.pem -o StrictHostKeyChecking=no "$jar_file" $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/umc7thServer.jar
           ssh -i glbd.pem -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "
-            pgrep java | xargs -r kill -15  # 기존에 실행 중인 Java 프로세스 종료
-            sleep 10
-            nohup java -jar /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &  # 새 버전 애플리케이션 실행
+          pgrep java | xargs -r kill -15  # 기존 Java 프로세스 종료
+          sleep 10
+          # 환경변수 함께 전달 후 애플리케이션 실행
+          export DB_PASSWORD='$DB_PASSWORD'
+          export SECRET_KEY='$JWT_TOKEN_SECRETKEY'
+          export GOOGLE_CLIENT_ID='$GOOGLE_CLIENT_ID'
+          export GOOGLE_CLIENT_SECRET='$GOOGLE_CLIENT_SECRET'
+          export KAKAO_REST_KEY='$KAKAO_REST_KEY'
+          export KAKAO_CLIENT_SECRET='$KAKAO_CLIENT_SECRET'
+          nohup java -jar /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
           "
-          rm -f glbd.pem  # 민감한 정보 삭제
