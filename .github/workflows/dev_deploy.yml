@@ -10,94 +10,58 @@ jobs:
 
 
     steps:
-      - uses: actions/checkout@v3  # 저장소 코드 체크아웃
+      - uses: actions/checkout@v3
 
-      - name: Set up JDK 21  # Java 개발 킷 설정
+      - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Make application.yaml  # application.yaml 파일 생성
+      - name: Create application.yaml
         run: |
-          cd ./src/main/resources
-          echo "${{ secrets.APPLICATION_YAML }}" > ./application.yaml
+          mkdir -p src/main/resources
+          echo "${{ secrets.APPLICATION_YML_BASE64 }}" | base64 -d > src/main/resources/application.yaml
         shell: bash
 
-      - name: Grant execute permission for gradlew  # gradlew 실행 권한 부여
+      - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build with Gradle  # Gradle을 사용하여 프로젝트 빌드
+      - name: Build with Gradle (설정 파일이 포함된 채로 빌드됨)
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
 
-      - name: Upload build artifact  # 빌드된 아티팩트 업로드
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: GoodluckBuddy_server
           path: build/libs/*.jar
 
   deploy:
-    needs: build  # build 작업이 성공적으로 완료된 후 실행
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download build artifact  # 이전 단계에서 업로드한 아티팩트 다운로드
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: GoodluckBuddy_server
           path: build/libs/
 
-      - name: Deploy to EC2  # EC2에 배포
+      - name: Deploy to EC2
         env:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
           EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
           EC2_HOST: ${{ secrets.EC2_HOST }}
-          JWT_TOKEN_SECRETKEY: ${{ secrets.JWT_TOKEN_SECRETKEY }}
-          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          KAKAO_REST_KEY: ${{ secrets.KAKAO_REST_KEY }}
-          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_URL: ${{ secrets.DB_URL }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
         run: |
           echo "$EC2_SSH_KEY" | base64 -d > glbd.pem
           chmod 600 glbd.pem
-          
-          # deploy.sh 생성 (따옴표 문제 해결 + 카카오 주소 정보 추가)
-          cat <<EOF > deploy.sh
-          #!/bin/bash
-          pgrep java | xargs -r kill -15
-          sleep 5
-          
-          nohup java -jar \\
-            -Dspring.datasource.url="${{ secrets.DB_URL }}" \\
-            -Dspring.datasource.username="${{ secrets.DB_USERNAME }}" \\
-            -Dspring.datasource.password="${{ secrets.DB_PASSWORD }}" \\
-            -Dspring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver \\
-            -Djwt.token.secretKey="${{ secrets.JWT_TOKEN_SECRETKEY }}" \\
-            -Djwt.token.expiration.access=1800000 \\
-            \\
-            -Dspring.security.oauth2.client.registration.google.client-id="${{ secrets.GOOGLE_CLIENT_ID }}" \\
-            -Dspring.security.oauth2.client.registration.google.client-secret="${{ secrets.GOOGLE_CLIENT_SECRET }}" \\
-            \\
-            -Dspring.security.oauth2.client.registration.kakao.client-id="${{ secrets.KAKAO_REST_KEY }}" \\
-            -Dspring.security.oauth2.client.registration.kakao.client-secret="${{ secrets.KAKAO_CLIENT_SECRET }}" \\
-            -Dspring.security.oauth2.client.registration.kakao.authorization-grant-type=authorization_code \\
-            -Dspring.security.oauth2.client.registration.kakao.client-authentication-method=client_secret_post \\
-            \\
-            -Dspring.security.oauth2.client.provider.kakao.authorization-uri=https://kauth.kakao.com/oauth/authorize \\
-            -Dspring.security.oauth2.client.provider.kakao.token-uri=https://kauth.kakao.com/oauth/token \\
-            -Dspring.security.oauth2.client.provider.kakao.user-info-uri=https://kapi.kakao.com/v2/user/me \\
-            -Dspring.security.oauth2.client.provider.kakao.user-name-attribute=id \\
-            \\
-            /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
-          EOF
-          
-          # 파일 전송 및 실행
           jar_file=$(find build/libs -name '*.jar' ! -name '*plain.jar' | head -n 1)
           scp -i glbd.pem -o StrictHostKeyChecking=no "$jar_file" $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/umc7thServer.jar
-          scp -i glbd.pem -o StrictHostKeyChecking=no deploy.sh $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/deploy.sh
-          ssh -i glbd.pem -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "bash /home/$EC2_USERNAME/deploy.sh"
+
+          ssh -i glbd.pem -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "
+            pgrep java | xargs -r kill -15
+            sleep 5
+            nohup java -jar /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
+          "
