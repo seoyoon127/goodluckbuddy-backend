@@ -66,44 +66,48 @@ jobs:
           echo "$EC2_SSH_KEY" | base64 -d > glbd.pem
           chmod 600 glbd.pem
           
-          # 1. [핵심] 깃허브 Runner에서 미리 스크립트 파일을 만듭니다.
-          # 여기서 ${{ secrets... }}가 실제 값으로 다 치환됩니다.
+          # 1. 깃허브에서 deploy.sh 파일을 생성합니다.
+          # (들여쓰기 주의: cat <<EOF 부분은 왼쪽 벽에 붙이지 않아도 됩니다)
           cat <<EOF > deploy.sh
           #!/bin/bash
           
-          # 기존 자바 종료
+          # 서버 중지
           pgrep java | xargs -r kill -15
           sleep 5
           
-          # 서버 실행 (이미 값이 다 채워진 상태)
+          # 환경변수 주입 (따옴표 문제 없이 안전하게 들어갑니다)
+          export DB_URL="${{ secrets.DB_URL }}"
+          export DB_USERNAME="${{ secrets.DB_USERNAME }}"
+          export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+          export JWT_TOKEN_SECRETKEY="${{ secrets.JWT_TOKEN_SECRETKEY }}"
+          export GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"
+          export GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
+          export KAKAO_CLIENT_ID="${{ secrets.KAKAO_REST_KEY }}"
+          export KAKAO_CLIENT_SECRET="${{ secrets.KAKAO_CLIENT_SECRET }}"
+          
+          # 서버 실행
           nohup java -jar \\
-            -Dspring.datasource.url="${{ secrets.DB_URL }}" \\
-            -Dspring.datasource.username="${{ secrets.DB_USERNAME }}" \\
-            -Dspring.datasource.password="${{ secrets.DB_PASSWORD }}" \\
-            -Dspring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver \\
-            -Djwt.token.secretKey="${{ secrets.JWT_TOKEN_SECRETKEY }}" \\
-            -Djwt.token.expiration.access=1800000 \\
-            \\
-            -Dspring.security.oauth2.client.registration.google.client-id="${{ secrets.GOOGLE_CLIENT_ID }}" \\
-            -Dspring.security.oauth2.client.registration.google.client-secret="${{ secrets.GOOGLE_CLIENT_SECRET }}" \\
-            \\
-            -Dspring.security.oauth2.client.registration.kakao.client-id="${{ secrets.KAKAO_REST_KEY }}" \\
-            -Dspring.security.oauth2.client.registration.kakao.client-secret="${{ secrets.KAKAO_CLIENT_SECRET }}" \\
+            -Dspring.datasource.url="\$DB_URL" \\
+            -Dspring.datasource.username="\$DB_USERNAME" \\
+            -Dspring.datasource.password="\$DB_PASSWORD" \\
+            -Djwt.token.secretKey="\$JWT_TOKEN_SECRETKEY" \\
+            -Dspring.security.oauth2.client.registration.google.client-id="\$GOOGLE_CLIENT_ID" \\
+            -Dspring.security.oauth2.client.registration.google.client-secret="\$GOOGLE_CLIENT_SECRET" \\
+            -Dspring.security.oauth2.client.registration.kakao.client-id="\$KAKAO_CLIENT_ID" \\
+            -Dspring.security.oauth2.client.registration.kakao.client-secret="\$KAKAO_CLIENT_SECRET" \\
             -Dspring.security.oauth2.client.registration.kakao.authorization-grant-type=authorization_code \\
             -Dspring.security.oauth2.client.registration.kakao.client-authentication-method=client_secret_post \\
-            \\
             -Dspring.security.oauth2.client.provider.kakao.authorization-uri=https://kauth.kakao.com/oauth/authorize \\
             -Dspring.security.oauth2.client.provider.kakao.token-uri=https://kauth.kakao.com/oauth/token \\
             -Dspring.security.oauth2.client.provider.kakao.user-info-uri=https://kapi.kakao.com/v2/user/me \\
             -Dspring.security.oauth2.client.provider.kakao.user-name-attribute=id \\
-            \\
             /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
           EOF
           
-          # 2. 완성된 스크립트와 jar 파일을 EC2로 보냅니다.
+          # 2. 파일 전송 (jar 파일 + deploy.sh)
           jar_file=$(find build/libs -name '*.jar' ! -name '*plain.jar' | head -n 1)
           scp -i glbd.pem -o StrictHostKeyChecking=no "$jar_file" $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/umc7thServer.jar
           scp -i glbd.pem -o StrictHostKeyChecking=no deploy.sh $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/deploy.sh
           
-          # 3. EC2에서는 그냥 실행만 합니다. (변수 걱정 끝)
+          # 3. 실행 (가장 깔끔함)
           ssh -i glbd.pem -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "bash /home/$EC2_USERNAME/deploy.sh"
