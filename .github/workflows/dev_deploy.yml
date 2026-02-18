@@ -8,42 +8,41 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-
     steps:
-      - uses: actions/checkout@v3  # 저장소 코드 체크아웃
+      - uses: actions/checkout@v3
 
-      - name: Set up JDK 21  # Java 개발 킷 설정
+      - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Make application.yaml  # application.yaml 파일 생성
+      - name: Make application.yaml
         run: |
           cd ./src/main/resources
           echo "${{ secrets.APPLICATION_YAML }}" > ./application.yaml
         shell: bash
 
-      - name: Grant execute permission for gradlew  # gradlew 실행 권한 부여
+      - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build with Gradle  # Gradle을 사용하여 프로젝트 빌드
+      - name: Build with Gradle
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
 
-      - name: Upload build artifact  # 빌드된 아티팩트 업로드
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: GoodluckBuddy_server
           path: build/libs/*.jar
 
   deploy:
-    needs: build  # build 작업이 성공적으로 완료된 후 실행
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download build artifact  # 이전 단계에서 업로드한 아티팩트 다운로드
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: GoodluckBuddy_server
@@ -65,32 +64,30 @@ jobs:
         run: |
           echo "$EC2_SSH_KEY" | base64 -d > glbd.pem
           chmod 600 glbd.pem
-          
-          cat <<'EOF' > deploy.sh
 
+          # deploy.sh 생성 (환경변수 확장 가능하게 EOF로)
+          cat <<EOF > deploy.sh
+          
           #!/bin/bash
           pgrep java | xargs -r kill -15
           sleep 5
           
-          nohup java -jar \
-            -Dspring.datasource.url="$DB_URL" \
-            -Dspring.datasource.username="$DB_USERNAME" \
-            -Dspring.datasource.password="$DB_PASSWORD" \
-            -Djwt.token.secretKey="$JWT_TOKEN_SECRETKEY" \
-            -Djwt.token.expiration.access=1800000 \
-            -Dspring.security.oauth2.client.registration.google.client-id="$GOOGLE_CLIENT_ID" \
-            -Dspring.security.oauth2.client.registration.google.client-secret="$GOOGLE_CLIENT_SECRET" \
-            -Dspring.security.oauth2.client.registration.kakao.client-id="$KAKAO_REST_KEY" \
-            -Dspring.security.oauth2.client.registration.kakao.client-secret="$KAKAO_CLIENT_SECRET" \
-            -Dspring.security.oauth2.client.registration.kakao.authorization-grant-type=authorization_code \
-            -Dspring.security.oauth2.client.registration.kakao.client-authentication-method=client_secret_post \
-            -Dspring.security.oauth2.client.provider.kakao.authorization-uri=https://kauth.kakao.com/oauth/authorize \
-            -Dspring.security.oauth2.client.provider.kakao.token-uri=https://kauth.kakao.com/oauth/token \
-            -Dspring.security.oauth2.client.provider.kakao.user-info-uri=https://kapi.kakao.com/v2/user/me \
-            -Dspring.security.oauth2.client.provider.kakao.user-name-attribute=id \
-            /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
+          cd /home/$EC2_USERNAME
+          
+          nohup java -jar umc7thServer.jar \
+          -Dspring.datasource.url="$DB_URL" \
+          -Dspring.datasource.username="$DB_USERNAME" \
+          -Dspring.datasource.password="$DB_PASSWORD" \
+          -Djwt.token.secretKey="$JWT_TOKEN_SECRETKEY" \
+          -Djwt.token.expiration.access=1800000 \
+          -Dspring.security.oauth2.client.registration.google.client-id="$GOOGLE_CLIENT_ID" \
+          -Dspring.security.oauth2.client.registration.google.client-secret="$GOOGLE_CLIENT_SECRET" \
+          -Dspring.security.oauth2.client.registration.kakao.client-id="$KAKAO_REST_KEY" \
+          -Dspring.security.oauth2.client.registration.kakao.client-secret="$KAKAO_CLIENT_SECRET" \
+          > app.log 2>&1 &
           EOF
           
+          # JAR 파일 전송
           jar_file=$(find build/libs -name '*.jar' ! -name '*plain.jar' | head -n 1)
           scp -i glbd.pem -o StrictHostKeyChecking=no "$jar_file" $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/umc7thServer.jar
           scp -i glbd.pem -o StrictHostKeyChecking=no deploy.sh $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/deploy.sh
