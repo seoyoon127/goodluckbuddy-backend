@@ -67,7 +67,6 @@ jobs:
           chmod 600 glbd.pem
           
           # 1. 깃허브에서 deploy.sh 파일을 생성합니다.
-          # (들여쓰기 주의: cat <<EOF 부분은 왼쪽 벽에 붙이지 않아도 됩니다)
           cat <<EOF > deploy.sh
           #!/bin/bash
           
@@ -80,6 +79,7 @@ jobs:
           export DB_USERNAME="${{ secrets.DB_USERNAME }}"
           export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
           export JWT_TOKEN_SECRETKEY="${{ secrets.JWT_TOKEN_SECRETKEY }}"
+          export SECRET_KEY="${{ JWT_TOKEN_SECRETKEY }}"
           export GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"
           export GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
           export KAKAO_CLIENT_ID="${{ secrets.KAKAO_REST_KEY }}"
