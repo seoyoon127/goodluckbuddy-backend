@@ -66,48 +66,42 @@ jobs:
           echo "$EC2_SSH_KEY" | base64 -d > glbd.pem
           chmod 600 glbd.pem
           
-          # 1. 깃허브에서 deploy.sh 파일을 생성합니다.
+          # 깃허브에서 스크립트 생성
           cat <<EOF > deploy.sh
           #!/bin/bash
           
-          # 서버 중지
+          # 기존 서버 종료
           pgrep java | xargs -r kill -15
           sleep 5
           
-          # 환경변수 주입 (따옴표 문제 없이 안전하게 들어갑니다)
-          export DB_URL="${{ secrets.DB_URL }}"
-          export DB_USERNAME="${{ secrets.DB_USERNAME }}"
-          export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
-          export JWT_TOKEN_SECRETKEY="${{ secrets.JWT_TOKEN_SECRETKEY }}"
-          export SECRET_KEY="${{ JWT_TOKEN_SECRETKEY }}"
-          export GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"
-          export GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
-          export KAKAO_CLIENT_ID="${{ secrets.KAKAO_REST_KEY }}"
-          export KAKAO_CLIENT_SECRET="${{ secrets.KAKAO_CLIENT_SECRET }}"
+          cat <<CONFIG > /home/$EC2_USERNAME/application-prod.properties
+          spring.datasource.url=${{ secrets.DB_URL }}
+          spring.datasource.username=${{ secrets.DB_USERNAME }}
+          spring.datasource.password=${{ secrets.DB_PASSWORD }}
+          spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
           
-          # 서버 실행
-          nohup java -jar \\
-            -Dspring.datasource.url="\$DB_URL" \\
-            -Dspring.datasource.username="\$DB_USERNAME" \\
-            -Dspring.datasource.password="\$DB_PASSWORD" \\
-            -Djwt.token.secretKey="\$JWT_TOKEN_SECRETKEY" \\
-            -Dspring.security.oauth2.client.registration.google.client-id="\$GOOGLE_CLIENT_ID" \\
-            -Dspring.security.oauth2.client.registration.google.client-secret="\$GOOGLE_CLIENT_SECRET" \\
-            -Dspring.security.oauth2.client.registration.kakao.client-id="\$KAKAO_CLIENT_ID" \\
-            -Dspring.security.oauth2.client.registration.kakao.client-secret="\$KAKAO_CLIENT_SECRET" \\
-            -Dspring.security.oauth2.client.registration.kakao.authorization-grant-type=authorization_code \\
-            -Dspring.security.oauth2.client.registration.kakao.client-authentication-method=client_secret_post \\
-            -Dspring.security.oauth2.client.provider.kakao.authorization-uri=https://kauth.kakao.com/oauth/authorize \\
-            -Dspring.security.oauth2.client.provider.kakao.token-uri=https://kauth.kakao.com/oauth/token \\
-            -Dspring.security.oauth2.client.provider.kakao.user-info-uri=https://kapi.kakao.com/v2/user/me \\
-            -Dspring.security.oauth2.client.provider.kakao.user-name-attribute=id \\
-            /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
+          jwt.token.secretKey=${{ secrets.JWT_TOKEN_SECRETKEY }}
+          jwt.token.expiration.access=1800000
+          
+          spring.security.oauth2.client.registration.google.client-id=${{ secrets.GOOGLE_CLIENT_ID }}
+          spring.security.oauth2.client.registration.google.client-secret=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          
+          spring.security.oauth2.client.registration.kakao.client-id=${{ secrets.KAKAO_REST_KEY }}
+          spring.security.oauth2.client.registration.kakao.client-secret=${{ secrets.KAKAO_CLIENT_SECRET }}
+          spring.security.oauth2.client.registration.kakao.authorization-grant-type=authorization_code
+          spring.security.oauth2.client.registration.kakao.client-authentication-method=client_secret_post
+          
+          spring.security.oauth2.client.provider.kakao.authorization-uri=https://kauth.kakao.com/oauth/authorize
+          spring.security.oauth2.client.provider.kakao.token-uri=https://kauth.kakao.com/oauth/token
+          spring.security.oauth2.client.provider.kakao.user-info-uri=https://kapi.kakao.com/v2/user/me
+          spring.security.oauth2.client.provider.kakao.user-name-attribute=id
+          CONFIG
+          
+          nohup java -jar -Dspring.config.location=file:/home/$EC2_USERNAME/application-prod.properties /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
           EOF
           
-          # 2. 파일 전송 (jar 파일 + deploy.sh)
+          # 파일 전송 및 실행
           jar_file=$(find build/libs -name '*.jar' ! -name '*plain.jar' | head -n 1)
           scp -i glbd.pem -o StrictHostKeyChecking=no "$jar_file" $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/umc7thServer.jar
           scp -i glbd.pem -o StrictHostKeyChecking=no deploy.sh $EC2_USERNAME@$EC2_HOST:/home/$EC2_USERNAME/deploy.sh
-          
-          # 3. 실행 (가장 깔끔함)
           ssh -i glbd.pem -o StrictHostKeyChecking=no $EC2_USERNAME@$EC2_HOST "bash /home/$EC2_USERNAME/deploy.sh"
