@@ -74,7 +74,7 @@ jobs:
           
           cd /home/$EC2_USERNAME
           
-          nohup java -jar umc7thServer.jar \
+          nohup java \
           -Dspring.datasource.url="$DB_URL" \
           -Dspring.datasource.username="$DB_USERNAME" \
           -Dspring.datasource.password="$DB_PASSWORD" \
@@ -84,6 +84,7 @@ jobs:
           -Dspring.security.oauth2.client.registration.google.client-secret="$GOOGLE_CLIENT_SECRET" \
           -Dspring.security.oauth2.client.registration.kakao.client-id="$KAKAO_REST_KEY" \
           -Dspring.security.oauth2.client.registration.kakao.client-secret="$KAKAO_CLIENT_SECRET" \
+          -jar umc7thServer.jar \
           > app.log 2>&1 &
           EOF
           
