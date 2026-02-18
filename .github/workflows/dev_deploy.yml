@@ -74,7 +74,7 @@ jobs:
           pgrep java | xargs -r kill -15
           sleep 5
           
-          cat <<CONFIG > /home/$EC2_USERNAME/application-prod.properties
+          cat <<CONFIG > /home/ubuntu/application.properties
           spring.datasource.url=${{ secrets.DB_URL }}
           spring.datasource.username=${{ secrets.DB_USERNAME }}
           spring.datasource.password=${{ secrets.DB_PASSWORD }}
@@ -97,7 +97,8 @@ jobs:
           spring.security.oauth2.client.provider.kakao.user-name-attribute=id
           CONFIG
           
-          nohup java -jar -Dspring.config.location=file:/home/$EC2_USERNAME/application-prod.properties /home/$EC2_USERNAME/umc7thServer.jar > app.log 2>&1 &
+          cd /home/ubuntu
+          nohup java -jar umc7thServer.jar > app.log 2>&1 &
           EOF
           
           # 파일 전송 및 실행
