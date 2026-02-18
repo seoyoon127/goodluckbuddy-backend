@@ -16,14 +16,16 @@ public class CustomOAuth2User implements OAuth2User {
     private final String providerId;
     private final SocialType socialType;
     private final Map<String, Object> attributes;
+    private final boolean isNew;
 
     public CustomOAuth2User(Long userId, String providerId,
                             SocialType socialType,
-                            Map<String, Object> attributes) {
+                            Map<String, Object> attributes, boolean isNew) {
         this.userId = userId;
         this.providerId = providerId;
         this.socialType = socialType;
         this.attributes = attributes;
+        this.isNew = isNew;
     }
 
     @Override

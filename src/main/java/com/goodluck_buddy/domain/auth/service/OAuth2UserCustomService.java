@@ -16,6 +16,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Service
 public class OAuth2UserCustomService extends DefaultOAuth2UserService {
@@ -30,20 +32,18 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, oAuth2User.getAttributes());
 
-        User user = saveOrUpdate(userInfo);
-        return new CustomOAuth2User(
-                user.getId(),
-                user.getProviderId(),
-                user.getSocialType(),
-                oAuth2User.getAttributes()
-        );
+        return saveOrUpdate(userInfo);
     }
 
-    private User saveOrUpdate(OAuth2UserInfo userInfo) {
-        User user = userRepository.findBySocialTypeAndProviderId(
-                        userInfo.getProvider(),
-                        userInfo.getProviderId()
-                )
+    private CustomOAuth2User saveOrUpdate(OAuth2UserInfo userInfo) {
+        Optional<User> optionalUser = userRepository.findBySocialTypeAndProviderId(
+                userInfo.getProvider(),
+                userInfo.getProviderId()
+        );
+
+        boolean isNew = optionalUser.isEmpty();
+
+        User user = optionalUser
                 .map(u -> {
                     if (!u.getSocialType().equals(userInfo.getProvider())) {
                         throw new AuthException(AuthErrorCode.DUPLICATE_SOCIAL);
@@ -53,6 +53,14 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
                 .orElse(
                         UserConverter.toOAuthUser(userInfo)
                 );
-        return userRepository.save(user);
+
+        userRepository.save(user);
+        return new CustomOAuth2User(
+                user.getId(),
+                user.getProviderId(),
+                user.getSocialType(),
+                userInfo.getAttributes(),
+                isNew
+        );
     }
 }

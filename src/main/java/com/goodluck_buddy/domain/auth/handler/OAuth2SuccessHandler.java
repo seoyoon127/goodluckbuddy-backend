@@ -35,8 +35,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         TokenDto.Tokens tokenDto = tokenService.issueTokens(user);
         CookieUtil.addCookie(response, "refreshToken", tokenDto.getRefreshToken());
 
-        response.sendRedirect(
-                "http://localhost:5173/home?token=" + tokenDto.getAccessToken()
-        );
+        if (principal.isNew()) {
+            response.sendRedirect(
+                    "http://localhost:5173/signup?token=" + tokenDto.getAccessToken()
+            );
+        } else {
+            response.sendRedirect(
+                    "http://localhost:5173/home?token=" + tokenDto.getAccessToken()
+            );
+        }
     }
 }
