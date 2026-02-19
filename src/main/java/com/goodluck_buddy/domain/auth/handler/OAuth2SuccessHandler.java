@@ -13,11 +13,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
@@ -37,11 +37,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         TokenDto.Tokens tokenDto = tokenService.issueTokens(user);
         CookieUtil.addCookie(response, "refreshToken", tokenDto.getRefreshToken());
 
-        HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
-        SavedRequest savedRequest = requestCache.getRequest(request, response);
+        String encodedRedirect = request.getParameter("redirect"); // 클라이언트에서 전달된 값
+        String decodedRedirect = URLDecoder.decode(encodedRedirect, StandardCharsets.UTF_8);
 
-        if (savedRequest != null) {
-            response.sendRedirect(savedRequest.getRedirectUrl() + "token=" + tokenDto.getAccessToken());
+        if (decodedRedirect != null) {
+            response.sendRedirect("http://localhost:5173" + decodedRedirect + "token=" + tokenDto.getAccessToken());
         } else if (principal.isNew()) {
             response.sendRedirect("http://localhost:5173/signup?token=" + tokenDto.getAccessToken());
         } else {
