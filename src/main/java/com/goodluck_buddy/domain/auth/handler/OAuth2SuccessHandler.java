@@ -39,9 +39,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String encodedRedirect = request.getParameter("redirect"); // 클라이언트에서 전달된 값
         String decodedRedirect = URLDecoder.decode(encodedRedirect, StandardCharsets.UTF_8);
+        System.out.println("decodedRedirect: " + decodedRedirect);
+        System.out.println("redirectUrl: " + "http://localhost:5173" + decodedRedirect + "?token=");
+
 
         if (decodedRedirect != null) {
-            response.sendRedirect("http://localhost:5173" + decodedRedirect + "token=" + tokenDto.getAccessToken());
+            response.sendRedirect("http://localhost:5173" + decodedRedirect + "?token=" + tokenDto.getAccessToken());
         } else if (principal.isNew()) {
             response.sendRedirect("http://localhost:5173/signup?token=" + tokenDto.getAccessToken());
         } else {
