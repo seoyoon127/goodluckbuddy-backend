@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -35,14 +37,15 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         TokenDto.Tokens tokenDto = tokenService.issueTokens(user);
         CookieUtil.addCookie(response, "refreshToken", tokenDto.getRefreshToken());
 
-        if (principal.isNew()) {
-            response.sendRedirect(
-                    "http://localhost:5173/signup?token=" + tokenDto.getAccessToken()
-            );
+        HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+        SavedRequest savedRequest = requestCache.getRequest(request, response);
+
+        if (savedRequest != null) {
+            response.sendRedirect(savedRequest.getRedirectUrl() + "token=" + tokenDto.getAccessToken());
+        } else if (principal.isNew()) {
+            response.sendRedirect("http://localhost:5173/signup?token=" + tokenDto.getAccessToken());
         } else {
-            response.sendRedirect(
-                    "http://localhost:5173/home?token=" + tokenDto.getAccessToken()
-            );
+            response.sendRedirect("http://localhost:5173/home?token=" + tokenDto.getAccessToken());
         }
     }
 }
