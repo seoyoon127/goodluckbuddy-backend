@@ -16,8 +16,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
@@ -37,14 +35,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         TokenDto.Tokens tokenDto = tokenService.issueTokens(user);
         CookieUtil.addCookie(response, "refreshToken", tokenDto.getRefreshToken());
 
-        String encodedRedirect = request.getParameter("redirect"); // 클라이언트에서 전달된 값
-        String decodedRedirect = URLDecoder.decode(encodedRedirect, StandardCharsets.UTF_8);
-        System.out.println("decodedRedirect: " + decodedRedirect);
-        System.out.println("redirectUrl: " + "http://localhost:5173" + decodedRedirect + "?token=");
+        String redirectUri = (String) request.getSession().getAttribute("redirect_uri");
 
-
-        if (decodedRedirect != null) {
-            response.sendRedirect("http://localhost:5173" + decodedRedirect + "?token=" + tokenDto.getAccessToken());
+        if (redirectUri != null && !redirectUri.equals("/")) {
+            response.sendRedirect("http://localhost:5173" + redirectUri + "?token=" + tokenDto.getAccessToken());
         } else if (principal.isNew()) {
             response.sendRedirect("http://localhost:5173/signup?token=" + tokenDto.getAccessToken());
         } else {

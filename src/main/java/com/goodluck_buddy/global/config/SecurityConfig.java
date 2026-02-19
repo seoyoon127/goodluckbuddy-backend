@@ -2,6 +2,7 @@ package com.goodluck_buddy.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goodluck_buddy.domain.auth.handler.OAuth2SuccessHandler;
+import com.goodluck_buddy.domain.auth.resolver.CustomOAuth2AuthorizationRequestResolver;
 import com.goodluck_buddy.domain.auth.service.OAuth2UserCustomService;
 import com.goodluck_buddy.domain.user.repository.UserRepository;
 import com.goodluck_buddy.global.jwt.JwtAuthFilter;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -25,6 +27,7 @@ public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final ClientRegistrationRepository clientRegistrationRepository;
 
     private final String[] allowUris = {
             "/swagger-ui/**",
@@ -64,6 +67,9 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter(objectMapper), UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(endpoint -> endpoint
+                                .authorizationRequestResolver(new CustomOAuth2AuthorizationRequestResolver(clientRegistrationRepository))
+                        )
                         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserCustomService))
                         .successHandler(oAuth2SuccessHandler));
 
