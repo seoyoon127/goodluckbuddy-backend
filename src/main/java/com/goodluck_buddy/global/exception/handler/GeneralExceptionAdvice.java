@@ -6,6 +6,7 @@ import com.goodluck_buddy.global.exception.GeneralException;
 import com.goodluck_buddy.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -30,6 +31,11 @@ public class GeneralExceptionAdvice {
                 .body(ApiResponse.onFailure(code, null));
     }
 
+    // 쿠키가 없을 경우
+    @ExceptionHandler(MissingRequestCookieException.class)
+    public ApiResponse<Void> handleCookieException(MissingRequestCookieException ex) {
+        return ApiResponse.onFailure(GeneralErrorCode.NO_COOKIE, null);
+    }
 
     // 그 외의 정의되지 않은 모든 예외 처리
     @ExceptionHandler(Exception.class)

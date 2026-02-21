@@ -48,7 +48,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             Claims claims = jwtUtil.getClaims(token);
             Long userId = Long.parseLong(jwtUtil.getId(token));
-            // 인증 객체 생성: 이메일로 찾아온 뒤, 인증 객체 생성
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
             Authentication auth = new UsernamePasswordAuthenticationToken(
