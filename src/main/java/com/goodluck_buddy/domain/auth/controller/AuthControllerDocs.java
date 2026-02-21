@@ -18,5 +18,8 @@ public interface AuthControllerDocs {
             summary = "로그아웃",
             description = "저장된 토큰을 삭제합니다."
     )
-    ApiResponse<Void> logout(@CookieValue("refreshToken") String refreshToken);
+    ApiResponse<Void> logout(
+            @CookieValue("refreshToken") String refreshToken,
+            HttpServletResponse response
+    );
 }

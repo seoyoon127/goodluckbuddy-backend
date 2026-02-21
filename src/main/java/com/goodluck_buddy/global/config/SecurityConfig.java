@@ -40,7 +40,7 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/api/letters/**",
             "/api/replies/letters/**",
-            "/api/replies/writer/**"
+            "/api/replies/writer/**",
     };
 
     @Bean

@@ -66,6 +66,7 @@ public class TokenService {
     }
 
     // 로그아웃
+    @Transactional
     public void logout(String refreshTokenValue) {
         RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(refreshTokenValue)
                 .orElseThrow(() -> new AuthException(AuthErrorCode.TOKEN_NOT_FOUND));
