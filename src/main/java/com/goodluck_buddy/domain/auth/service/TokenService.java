@@ -37,7 +37,6 @@ public class TokenService {
                         new RefreshToken(refreshTokenValue, user, LocalDateTime.now().plusDays(1))
                 );
 
-
         refreshTokenRepository.save(refreshToken);
 
         return new TokenDto.Tokens(accessToken, refreshTokenValue);
@@ -68,7 +67,9 @@ public class TokenService {
     // 로그아웃
     @Transactional
     public void logout(String refreshTokenValue) {
-        RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(refreshTokenValue)
+        System.out.println("RefreshToken = [" + refreshTokenValue + "]");
+        System.out.println("길이 = " + refreshTokenValue.length());
+        RefreshToken refreshToken = refreshTokenRepository.findByRefreshToken(refreshTokenValue.trim())
                 .orElseThrow(() -> new AuthException(AuthErrorCode.TOKEN_NOT_FOUND));
         refreshTokenRepository.delete(refreshToken);
     }
