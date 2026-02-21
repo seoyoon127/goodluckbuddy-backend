@@ -3,6 +3,7 @@ package com.goodluck_buddy.domain.auth.controller;
 import com.goodluck_buddy.domain.auth.dto.TokenDto;
 import com.goodluck_buddy.domain.auth.exception.code.AuthSuccessCode;
 import com.goodluck_buddy.domain.auth.service.TokenService;
+import com.goodluck_buddy.global.jwt.CookieUtil;
 import com.goodluck_buddy.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,8 +30,12 @@ public class AuthController implements AuthControllerDocs {
 
     @PostMapping("/logout")
     public ApiResponse<Void> logout(
-            @CookieValue("refreshToken") String refreshToken) {
-        tokenService.logout(refreshToken);
+            @CookieValue("refreshToken") String refreshToken,
+            HttpServletResponse response) {
+        if (refreshToken != null) {
+            tokenService.logout(refreshToken);
+        }
+        CookieUtil.deleteCookie(response, "refreshToken");
         return ApiResponse.onSuccess(AuthSuccessCode.LOGOUT_OK, null);
     }
 }
