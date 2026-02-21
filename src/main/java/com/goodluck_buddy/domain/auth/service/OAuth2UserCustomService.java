@@ -36,6 +36,8 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
     }
 
     private CustomOAuth2User saveOrUpdate(OAuth2UserInfo userInfo) {
+        System.out.println("provider = " + userInfo.getProvider());
+        System.out.println("providerId = " + userInfo.getProviderId());
         Optional<User> optionalUser = userRepository.findBySocialTypeAndProviderId(
                 userInfo.getProvider(),
                 userInfo.getProviderId()
@@ -55,6 +57,7 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
                 );
 
         userRepository.save(user);
+        System.out.println("login userId:" + user.getId());
         return new CustomOAuth2User(
                 user.getId(),
                 user.getProviderId(),

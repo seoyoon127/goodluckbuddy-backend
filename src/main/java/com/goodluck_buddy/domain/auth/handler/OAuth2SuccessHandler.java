@@ -33,6 +33,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
 
         TokenDto.Tokens tokenDto = tokenService.issueTokens(user);
+        System.out.println("=======SuccessHandler=======");
+        System.out.println("refreshToken:" + tokenDto.getRefreshToken());
+        System.out.println("accessToken:" + tokenDto.getAccessToken());
         CookieUtil.addCookie(response, "refreshToken", tokenDto.getRefreshToken());
 
         String redirectUri = (String) request.getSession().getAttribute("redirect_uri");
