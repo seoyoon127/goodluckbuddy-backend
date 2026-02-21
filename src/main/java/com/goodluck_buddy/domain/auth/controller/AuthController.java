@@ -30,7 +30,7 @@ public class AuthController implements AuthControllerDocs {
 
     @PostMapping("/logout")
     public ApiResponse<Void> logout(
-            @CookieValue("refreshToken") String refreshToken,
+            @CookieValue(value = "refreshToken", required = false) String refreshToken,
             HttpServletResponse response) {
         if (refreshToken != null) {
             tokenService.logout(refreshToken);

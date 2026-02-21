@@ -19,7 +19,7 @@ public interface AuthControllerDocs {
             description = "저장된 토큰을 삭제합니다."
     )
     ApiResponse<Void> logout(
-            @CookieValue("refreshToken") String refreshToken,
+            @CookieValue(value = "refreshToken", required = false) String refreshToken,
             HttpServletResponse response
     );
 }
