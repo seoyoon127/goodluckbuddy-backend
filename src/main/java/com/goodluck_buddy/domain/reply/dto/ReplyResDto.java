@@ -16,6 +16,7 @@ public class ReplyResDto {
         private String writerName;
         private LocalDate createdAt;
         private Long likeCount;
+        private boolean like;
     }
 
     @Getter

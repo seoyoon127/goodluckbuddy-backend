@@ -20,7 +20,7 @@ public interface ReplyControllerDocs {
             summary = "답글 목록 조회",
             description = "해당 편지의 답글 목록을 조회합니다."
     )
-    ApiResponse<List<ReplyResDto.Reply>> getReplies(@PathVariable Long id);
+    ApiResponse<List<ReplyResDto.Reply>> getReplies(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String accessToken);
 
     @Operation(
             summary = "답글 작성",

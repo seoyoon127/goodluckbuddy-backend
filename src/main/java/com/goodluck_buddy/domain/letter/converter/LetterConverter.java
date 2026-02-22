@@ -54,7 +54,8 @@ public class LetterConverter {
             Letter letter,
             String writerName,
             List<Info> infos,
-            boolean isMine
+            boolean isMine,
+            boolean like
     ) {
         return LetterResDto.LetterDetail.builder()
                 .letterId(letter.getId())
@@ -67,6 +68,7 @@ public class LetterConverter {
                 .category(letter.getCategories().getCategory())
                 .mine(isMine)
                 .infos(infos.stream().map(i -> i.getName()).toList())
+                .like(like)
                 .build();
     }
 

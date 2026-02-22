@@ -27,8 +27,8 @@ public class ReplyController implements ReplyControllerDocs {
     private final JwtUtil jwtUtil;
 
     @GetMapping("/letters/{id}")
-    public ApiResponse<List<ReplyResDto.Reply>> getReplies(@PathVariable Long id) {
-        List<ReplyResDto.Reply> respone = replyService.getReplies(id);
+    public ApiResponse<List<ReplyResDto.Reply>> getReplies(@PathVariable Long id, @RequestHeader(value = "Authorization", required = false) String accessToken) {
+        List<ReplyResDto.Reply> respone = replyService.getReplies(id, accessToken);
         return ApiResponse.onSuccess(ReplySuccessCode.REPLY_GET_OK, respone);
     }
 

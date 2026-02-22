@@ -41,5 +41,6 @@ public class LetterResDto {
         private Category category;
         private List<String> infos;
         private boolean mine;
+        private boolean like;
     }
 }
