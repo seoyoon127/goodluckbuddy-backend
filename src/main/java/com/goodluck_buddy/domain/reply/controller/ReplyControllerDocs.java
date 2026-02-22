@@ -43,8 +43,7 @@ public interface ReplyControllerDocs {
     )
     ApiResponse<List<ReplyResDto.ReplyPreview>> getMyReplies(
             @RequestHeader("Authorization") String accessToken,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) Category category,
             @RequestParam SortType sort);
 
     @Operation(
@@ -52,8 +51,7 @@ public interface ReplyControllerDocs {
             description = "해당 유저가 작성한 답글 목록을 조회합니다."
     )
     ApiResponse<List<ReplyResDto.ReplyPreview>> getUserReplies(
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) Category category,
             @RequestParam SortType sort,
             @PathVariable Long userId);
 }

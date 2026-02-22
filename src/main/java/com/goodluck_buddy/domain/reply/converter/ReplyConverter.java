@@ -41,7 +41,7 @@ public class ReplyConverter {
         return ReplyResDto.ReplyPreview.builder()
                 .replyId(reply.getId())
                 .content(reply.getContent())
-                .letterParentCategory(reply.getLetter().getCategories().getParentCategory())
+                .letterParentCategory(reply.getLetter().getCategories().getCategory())
                 .letterId(reply.getLetter().getId())
                 .createdAt(reply.getCreatedAt())
                 .writerName(writerName)

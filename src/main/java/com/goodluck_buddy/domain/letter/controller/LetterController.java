@@ -36,11 +36,10 @@ public class LetterController implements LetterControllerDocs {
 
     @GetMapping("")
     public ApiResponse<List<LetterResDto.Letter>> getLetters(
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) Category category,
             @RequestParam SortType sort
     ) {
-        List<LetterResDto.Letter> reponse = letterService.getLetters(category, parentCategory, null, sort);
+        List<LetterResDto.Letter> reponse = letterService.getLetters(category, null, sort);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
     }
 
@@ -54,11 +53,10 @@ public class LetterController implements LetterControllerDocs {
     @GetMapping("/me")
     public ApiResponse<List<LetterResDto.Letter>> getMyLetters(
             @RequestHeader("Authorization") String accessToken,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) Category category,
             @RequestParam SortType sort) {
         Long userId = parseLong(jwtUtil.getId(accessToken.split(" ")[1]));
-        List<LetterResDto.Letter> reponse = letterService.getLetters(category, parentCategory, userId, sort);
+        List<LetterResDto.Letter> reponse = letterService.getLetters(category, userId, sort);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
     }
 
@@ -79,22 +77,20 @@ public class LetterController implements LetterControllerDocs {
 
     @GetMapping("/writer/{userId}")
     public ApiResponse<List<LetterResDto.Letter>> getUserLetters(
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) Category category,
             @RequestParam SortType sort,
             @PathVariable Long userId) {
-        List<LetterResDto.Letter> reponse = letterService.getLetters(category, parentCategory, userId, sort);
+        List<LetterResDto.Letter> reponse = letterService.getLetters(category, userId, sort);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
     }
 
     @GetMapping("/like")
     public ApiResponse<List<LetterResDto.Letter>> getLikeLetters(
             @RequestHeader("Authorization") String accessToken,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) Category category,
             @RequestParam SortType sort) {
         Long userId = parseLong(jwtUtil.getId(accessToken.split(" ")[1]));
-        List<LetterResDto.Letter> reponse = letterService.getLikeLetters(category, parentCategory, userId, sort);
+        List<LetterResDto.Letter> reponse = letterService.getLikeLetters(category, userId, sort);
         return ApiResponse.onSuccess(LetterSuccessCode.LETTERS_GET_OK, reponse);
     }
 
