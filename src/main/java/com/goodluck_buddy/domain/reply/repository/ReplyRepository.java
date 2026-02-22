@@ -14,7 +14,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             SELECT r FROM Reply r
             LEFT JOIN FETCH r.letter
             LEFT JOIN FETCH r.user
-            WHERE (:parentCategory IS NULL or r.letter.categories.category = :category)
+            WHERE (:category IS NULL or r.letter.categories.category = :category)
             AND (:userId IS NULL or r.user.id = :userId)
             """)
     List<Reply> findAllByFilters(

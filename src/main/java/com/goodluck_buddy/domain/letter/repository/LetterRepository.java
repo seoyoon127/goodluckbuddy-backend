@@ -14,7 +14,7 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
 
     @Query("""
             SELECT l from Letter l
-            WHERE (:parentCategory IS NULL or l.categories.category = :category)
+            WHERE (:category IS NULL or l.categories.category = :category)
             AND (:userId IS NULL or l.writerId = :userId)
             """)
     List<Letter> findAllByFilters(
@@ -24,7 +24,7 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
 
     @Query("""
             SELECT l from Letter l
-            WHERE (:parentCategory IS NULL or l.categories.category = :category)
+            WHERE (:category IS NULL or l.categories.category = :category)
             AND EXISTS (
                  SELECT 1 FROM Like lk
                  WHERE lk.letter = l
