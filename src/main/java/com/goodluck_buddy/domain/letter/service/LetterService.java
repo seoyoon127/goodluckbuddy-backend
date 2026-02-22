@@ -44,7 +44,7 @@ public class LetterService {
         Long userId = findUserIdByAccessToken(accessToken);
 
         Categories category = categoriesRepository
-                .findByNameAndParentCategory(dto.getCategory(), dto.getParentCategory())
+                .findByCategory(dto.getCategory())
                 .orElseThrow(() -> new LetterException(LetterErrorCode.CATEGORY_NOT_FOUND));
 
         Letter letter = LetterConverter.toLetter(userId, dto, category);
@@ -58,7 +58,7 @@ public class LetterService {
         }
     }
 
-    public List<LetterResDto.Letter> getLetters(String category, Category parentCategory, Long id, SortType sortType) {
+    public List<LetterResDto.Letter> getLetters(Category category, Long id, SortType sortType) {
         if (sortType == null) {
             throw new LetterException(LetterErrorCode.NO_SORT);
         }
@@ -66,7 +66,7 @@ public class LetterService {
             case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
             case LIKE -> Sort.by(Sort.Direction.DESC, "likeCount");
         };
-        List<Letter> letters = letterRepository.findAllByFilters(category, parentCategory, id, sort);
+        List<Letter> letters = letterRepository.findAllByFilters(category, id, sort);
         return letters.stream()
                 .map(letter -> {
                     User writer = userRepository.findById(letter.getWriterId())
@@ -76,7 +76,7 @@ public class LetterService {
                 .toList();
     }
 
-    public List<LetterResDto.Letter> getLikeLetters(String category, Category parentCategory, Long id, SortType sortType) {
+    public List<LetterResDto.Letter> getLikeLetters(Category category, Long id, SortType sortType) {
         if (sortType == null) {
             throw new LetterException(LetterErrorCode.NO_SORT);
         }
@@ -84,7 +84,7 @@ public class LetterService {
             case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
             case LIKE -> Sort.by(Sort.Direction.DESC, "likeCount");
         };
-        List<Letter> letters = letterRepository.findAllByFiltersWithLike(category, parentCategory, id, sort);
+        List<Letter> letters = letterRepository.findAllByFiltersWithLike(category, id, sort);
         return letters.stream()
                 .map(letter -> {
                     User writer = userRepository.findById(letter.getWriterId())
@@ -142,7 +142,7 @@ public class LetterService {
         }
         if (dto.getCategory() != null) {
             Categories category = categoriesRepository
-                    .findByNameAndParentCategory(dto.getCategory(), dto.getParentCategory())
+                    .findByCategory(dto.getCategory())
                     .orElseThrow(() -> new LetterException(LetterErrorCode.CATEGORY_NOT_FOUND));
             letter.updateCategories(category);
         }
@@ -158,7 +158,7 @@ public class LetterService {
         Long userId = findUserIdByAccessToken(accessToken);
         Letter letter = letterRepository.findById(letterId)
                 .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
-        if (userId != letter.getWriterId()) {
+        if (userId.equals(letter.getWriterId())) {
             throw new LetterException(LetterErrorCode.INVALID_WRITER);
         }
         letterRepository.delete(letter);

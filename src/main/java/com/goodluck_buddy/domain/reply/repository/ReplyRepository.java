@@ -14,13 +14,11 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
             SELECT r FROM Reply r
             LEFT JOIN FETCH r.letter
             LEFT JOIN FETCH r.user
-            WHERE (:category IS NULL or r.letter.categories.name = :category)
-            AND (:parentCategory IS NULL or r.letter.categories.parentCategory = :parentCategory)
+            WHERE (:parentCategory IS NULL or r.letter.categories.category = :category)
             AND (:userId IS NULL or r.user.id = :userId)
             """)
     List<Reply> findAllByFilters(
-            @Param("category") String category,
-            @Param("parentCategory") Category parentCategory,
+            @Param("category") Category category,
             @Param("userId") Long userId,
             Sort sort);
 }

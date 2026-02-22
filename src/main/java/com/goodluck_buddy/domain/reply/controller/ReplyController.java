@@ -50,21 +50,19 @@ public class ReplyController implements ReplyControllerDocs {
     @GetMapping("/me")
     public ApiResponse<List<ReplyResDto.ReplyPreview>> getMyReplies(
             @RequestHeader("Authorization") String accessToken,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) Category category,
             @RequestParam SortType sort) {
         Long userId = parseLong(jwtUtil.getId(accessToken.split(" ")[1]));
-        List<ReplyResDto.ReplyPreview> response = replyService.getReplies(category, parentCategory, userId, sort);
+        List<ReplyResDto.ReplyPreview> response = replyService.getReplies(category, userId, sort);
         return ApiResponse.onSuccess(ReplySuccessCode.REPLY_GET_OK, response);
     }
 
     @GetMapping("/writer/{userId}")
     public ApiResponse<List<ReplyResDto.ReplyPreview>> getUserReplies(
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) Category category,
             @RequestParam SortType sort,
             @PathVariable Long userId) {
-        List<ReplyResDto.ReplyPreview> response = replyService.getReplies(category, parentCategory, userId, sort);
+        List<ReplyResDto.ReplyPreview> response = replyService.getReplies(category, userId, sort);
         return ApiResponse.onSuccess(ReplySuccessCode.REPLY_GET_OK, response);
     }
 }

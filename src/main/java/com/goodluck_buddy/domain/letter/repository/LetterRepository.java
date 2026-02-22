@@ -14,28 +14,24 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
 
     @Query("""
             SELECT l from Letter l
-            WHERE (:category IS NULL or l.categories.name = :category)
-            AND (:parentCategory IS NULL or l.categories.parentCategory = :parentCategory)
+            WHERE (:parentCategory IS NULL or l.categories.category = :category)
             AND (:userId IS NULL or l.writerId = :userId)
             """)
     List<Letter> findAllByFilters(
-            @Param("category") String category,
-            @Param("parentCategory") Category parentCategory,
+            @Param("category") Category category,
             @Param("userId") Long userId,
             Sort sort);
 
     @Query("""
             SELECT l from Letter l
-            WHERE (:category IS NULL or l.categories.name = :category)
-            AND (:parentCategory IS NULL or l.categories.parentCategory = :parentCategory)
+            WHERE (:parentCategory IS NULL or l.categories.category = :category)
             AND EXISTS (
                  SELECT 1 FROM Like lk
                  WHERE lk.letter = l
                    AND lk.user.id = :userId
              )""")
     List<Letter> findAllByFiltersWithLike(
-            @Param("category") String category,
-            @Param("parentCategory") Category parentCategory,
+            @Param("category") Category category,
             @Param("userId") Long userId,
             Sort sort);
 

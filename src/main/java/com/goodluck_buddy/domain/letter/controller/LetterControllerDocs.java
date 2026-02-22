@@ -29,8 +29,7 @@ public interface LetterControllerDocs {
             description = "편지 목록을 조회합니다."
     )
     ApiResponse<List<LetterResDto.Letter>> getLetters(
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) Category category,
             @RequestParam SortType sort
     );
 
@@ -46,8 +45,7 @@ public interface LetterControllerDocs {
     )
     ApiResponse<List<LetterResDto.Letter>> getMyLetters(
             @RequestHeader("Authorization") String accessToken,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) Category category,
             @RequestParam SortType sort);
 
     @Operation(
@@ -70,8 +68,7 @@ public interface LetterControllerDocs {
             description = "특정 유저의 편지 목록을 조회합니다."
     )
     ApiResponse<List<LetterResDto.Letter>> getUserLetters(
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) Category category,
             @RequestParam SortType sort,
             @PathVariable Long userId);
 
@@ -81,8 +78,7 @@ public interface LetterControllerDocs {
     )
     ApiResponse<List<LetterResDto.Letter>> getLikeLetters(
             @RequestHeader("Authorization") String accessToken,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Category parentCategory,
+            @RequestParam(required = false) Category category,
             @RequestParam SortType sort);
 
     @Operation(

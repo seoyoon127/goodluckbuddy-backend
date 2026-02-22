@@ -17,7 +17,7 @@ public class LetterResDto {
         private String title;
         private String content;
         private Long likeCount;
-        private Category parentCategory;
+        private Category category;
     }
 
     @Getter
@@ -37,8 +37,7 @@ public class LetterResDto {
         private LetterDesign letterDesign;
         private LocalDateTime createdAt;
         private Long likeCount;
-        private Category parentCategory;
-        private String category;
+        private Category category;
         private List<String> infos;
         private boolean mine;
     }

@@ -24,11 +24,8 @@ public class LetterReqDto {
         @NotNull
         private LetterDesign letterDesign;
 
-        @NotBlank
-        private String category;
-
         @NotNull
-        private Category parentCategory;
+        private Category category;
 
         private List<@NotBlank String> infoNames;
     }
@@ -44,10 +41,7 @@ public class LetterReqDto {
         private LetterDesign letterDesign;
 
         @NotNull
-        private String category;
-
-        @NotNull
-        private Category parentCategory;
+        private Category category;
 
         private List<@NotBlank String> infoNames;
     }

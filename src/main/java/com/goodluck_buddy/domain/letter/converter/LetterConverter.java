@@ -45,7 +45,7 @@ public class LetterConverter {
                 .title(letter.getTitle())
                 .content(letter.getContent())
                 .likeCount(letter.getLikeCount())
-                .parentCategory(letter.getCategories().getParentCategory())
+                .category(letter.getCategories().getCategory())
                 .build();
     }
 
@@ -63,8 +63,7 @@ public class LetterConverter {
                 .letterDesign(letter.getLetterDesign())
                 .createdAt(letter.getCreatedAt())
                 .likeCount(letter.getLikeCount())
-                .parentCategory(letter.getCategories().getParentCategory())
-                .category(letter.getCategories().getName())
+                .category(letter.getCategories().getCategory())
                 .mine(isMine)
                 .infos(infos.stream().map(i -> i.getName()).toList())
                 .build();

@@ -70,14 +70,14 @@ public class ReplyService {
         replyRepository.delete(reply);
     }
 
-    public List<ReplyResDto.ReplyPreview> getReplies(String category, Category parentCategory, Long userId, SortType sortType) {
+    public List<ReplyResDto.ReplyPreview> getReplies(Category category, Long userId, SortType sortType) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
         Sort sort = switch (sortType) {
             case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
             case LIKE -> Sort.by(Sort.Direction.DESC, "likeCount");
         };
-        List<Reply> replies = replyRepository.findAllByFilters(category, parentCategory, userId, sort);
+        List<Reply> replies = replyRepository.findAllByFilters(category, userId, sort);
         return replies.stream()
                 .map(r -> {
                     User writer = userRepository.findById(userId)
