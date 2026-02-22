@@ -16,7 +16,7 @@ public class ReplyConverter {
                 .replyId(reply.getId())
                 .likeCount(reply.getLikeCount())
                 .content(reply.getContent())
-                .createdAt(reply.getCreatedAt())
+                .createdAt(reply.getCreatedAt().toLocalDate())
                 .writerName(writerName)
                 .build();
     }
@@ -43,7 +43,7 @@ public class ReplyConverter {
                 .content(reply.getContent())
                 .letterParentCategory(reply.getLetter().getCategories().getCategory())
                 .letterId(reply.getLetter().getId())
-                .createdAt(reply.getCreatedAt())
+                .createdAt(reply.getCreatedAt().toLocalDate())
                 .writerName(writerName)
                 .likeCount(reply.getLikeCount())
                 .letterTitle(reply.getLetter().getTitle())
