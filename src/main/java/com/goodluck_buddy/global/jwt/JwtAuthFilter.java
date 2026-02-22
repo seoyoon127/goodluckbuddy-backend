@@ -59,15 +59,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             // 인증 완료 후 SecurityContextHolder에 넣기
             SecurityContextHolder.getContext().setAuthentication(auth);
         } catch (ExpiredJwtException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json;charset=UTF-8");
-
-            ApiResponse<Void> body =
-                    ApiResponse.onFailure(GeneralErrorCode.EXPIRED_TOKEN, null);
-
-            response.getWriter().write(
-                    objectMapper.writeValueAsString(body)
-            );
+            SecurityContextHolder.clearContext();
             return;
         } catch (JwtException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
