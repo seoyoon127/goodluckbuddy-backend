@@ -61,6 +61,9 @@ public class UserService {
     @Transactional
     public void withdraw(String accessToken) {
         Long userId = findUserIdByAccessToken(accessToken);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+        user.updateNickname("탈퇴한 사용자");
         userRepository.withdraw(userId, Status.INACTIVATE, "");
     }
 
