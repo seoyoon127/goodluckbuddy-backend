@@ -49,4 +49,20 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void updateGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public void updateBirth(LocalDate birth) {
+        this.birth = birth;
+    }
+
+    public void updateCategory(Category category) {
+        this.interestCategory = category;
+    }
 }
