@@ -15,6 +15,7 @@ import com.goodluck_buddy.domain.letter.repository.CategoriesRepository;
 import com.goodluck_buddy.domain.letter.repository.InfoRepository;
 import com.goodluck_buddy.domain.letter.repository.LetterRepository;
 import com.goodluck_buddy.domain.letter.repository.mapping.LetterInfoRepository;
+import com.goodluck_buddy.domain.like.repository.LikeRepository;
 import com.goodluck_buddy.domain.user.entity.User;
 import com.goodluck_buddy.domain.user.exception.UserException;
 import com.goodluck_buddy.domain.user.exception.code.UserErrorCode;
@@ -37,6 +38,7 @@ public class LetterService {
     private final LetterInfoRepository letterInfoRepository;
     private final CategoriesRepository categoriesRepository;
     private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
     private final JwtUtil jwtUtil;
 
     @Transactional
@@ -114,9 +116,16 @@ public class LetterService {
                 .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
         User writer = userRepository.findById(letter.getWriterId())
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+        boolean like = false;
+        if (userId != null) {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+            like = likeRepository.existsByUserAndLetter(user, letter);
+        }
+        final boolean isLiked = like;
         boolean isMine = userId.equals(writer.getId());
         List<Info> infos = letter.getInfos();
-        return LetterConverter.toLetterDetailRes(letter, writer.getNickname(), infos, isMine);
+        return LetterConverter.toLetterDetailRes(letter, writer.getNickname(), infos, isMine, isLiked);
     }
 
     @Transactional

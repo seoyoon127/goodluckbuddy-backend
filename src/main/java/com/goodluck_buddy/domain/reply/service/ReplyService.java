@@ -6,6 +6,7 @@ import com.goodluck_buddy.domain.letter.enums.SortType;
 import com.goodluck_buddy.domain.letter.exception.LetterException;
 import com.goodluck_buddy.domain.letter.exception.code.LetterErrorCode;
 import com.goodluck_buddy.domain.letter.repository.LetterRepository;
+import com.goodluck_buddy.domain.like.repository.ReplyLikeRepository;
 import com.goodluck_buddy.domain.reply.converter.ReplyConverter;
 import com.goodluck_buddy.domain.reply.dto.ReplyReqDto;
 import com.goodluck_buddy.domain.reply.dto.ReplyResDto;
@@ -32,16 +33,29 @@ public class ReplyService {
     private final LetterRepository letterRepository;
     private final UserRepository userRepository;
     private final ReplyRepository replyRepository;
+    private final ReplyLikeRepository replyLikeRepository;
     private final JwtUtil jwtUtil;
 
-    public List<ReplyResDto.Reply> getReplies(Long id) {
+    public List<ReplyResDto.Reply> getReplies(Long id, String accessToken) {
         Letter letter = letterRepository.findById(id)
                 .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
+        User user = null;
+        if (accessToken != null) {
+            Long userId = findUserIdByAccessToken(accessToken);
+            user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+        }
+        final User userF = user;
         return letter.getReplies().stream()
                 .map(r -> {
                     User writer = userRepository.findById(letter.getWriterId())
                             .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-                    return ReplyConverter.toReplyRes(r, writer.getNickname());
+                    boolean isLiked = false;
+
+                    if (userF != null) {
+                        isLiked = replyLikeRepository.existsByUserAndReply(userF, r);
+                    }
+                    return ReplyConverter.toReplyRes(r, writer.getNickname(), isLiked);
                 }).toList();
     }
 

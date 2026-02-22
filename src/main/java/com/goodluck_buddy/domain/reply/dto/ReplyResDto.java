@@ -4,7 +4,7 @@ import com.goodluck_buddy.domain.letter.enums.Category;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class ReplyResDto {
 
@@ -14,8 +14,9 @@ public class ReplyResDto {
         private Long replyId;
         private String content;
         private String writerName;
-        private LocalDateTime createdAt;
+        private LocalDate createdAt;
         private Long likeCount;
+        private boolean like;
     }
 
     @Getter
@@ -26,7 +27,7 @@ public class ReplyResDto {
         private String letterTitle;
         private String content;
         private String writerName;
-        private LocalDateTime createdAt;
+        private LocalDate createdAt;
         private Long likeCount;
         private Category letterParentCategory;
     }

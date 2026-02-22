@@ -10,14 +10,16 @@ public class ReplyConverter {
 
     public static ReplyResDto.Reply toReplyRes(
             Reply reply,
-            String writerName
+            String writerName,
+            boolean like
     ) {
         return ReplyResDto.Reply.builder()
                 .replyId(reply.getId())
                 .likeCount(reply.getLikeCount())
                 .content(reply.getContent())
-                .createdAt(reply.getCreatedAt())
+                .createdAt(reply.getCreatedAt().toLocalDate())
                 .writerName(writerName)
+                .like(like)
                 .build();
     }
 
@@ -43,7 +45,7 @@ public class ReplyConverter {
                 .content(reply.getContent())
                 .letterParentCategory(reply.getLetter().getCategories().getCategory())
                 .letterId(reply.getLetter().getId())
-                .createdAt(reply.getCreatedAt())
+                .createdAt(reply.getCreatedAt().toLocalDate())
                 .writerName(writerName)
                 .likeCount(reply.getLikeCount())
                 .letterTitle(reply.getLetter().getTitle())
