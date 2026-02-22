@@ -29,8 +29,26 @@ public class UserService {
     @Transactional
     public void updateProfile(String accessToken, UserReqDto.Profile dto) {
         Long userId = findUserIdByAccessToken(accessToken);
-        checkNickname(dto.getNickname());
-        userRepository.updateProfile(userId, dto.getNickname(), dto.getGender(), dto.getBirth(), dto.getCategory());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+
+        if (dto.getNickname() != null) {
+            checkNickname(dto.getNickname());
+            user.updateNickname(dto.getNickname());
+        }
+
+        if (dto.getGender() != null) {
+            user.updateGender(dto.getGender());
+        }
+
+        if (dto.getBirth() != null) {
+            user.updateBirth(dto.getBirth());
+        }
+
+        if (dto.getCategory() != null) {
+            user.updateCategory(dto.getCategory());
+        }
+
     }
 
     public UserResDto.Profile getMyProfile(String accessToken) {
