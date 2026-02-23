@@ -126,7 +126,7 @@ public class LetterService {
             like = likeRepository.existsByUserAndLetter(user, letter);
         }
         final boolean isLiked = like;
-        boolean isMine = userId.equals(writer.getId());
+        boolean isMine = userId != null && userId.equals(writer.getId());
         List<Info> infos = letter.getInfos();
         return LetterConverter.toLetterDetailRes(letter, writer.getNickname(), infos, isMine, isLiked);
     }
