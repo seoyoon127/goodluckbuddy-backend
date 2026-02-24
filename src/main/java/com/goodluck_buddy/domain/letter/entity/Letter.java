@@ -13,7 +13,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -47,8 +49,8 @@ public class Letter extends BaseEntity {
     @JoinColumn(name = "categories_id")
     private Categories categories;
 
-    @OneToMany(mappedBy = "letter", cascade = CascadeType.ALL)
-    private List<LetterInfo> letterInfos = new ArrayList<>();
+    @OneToMany(mappedBy = "letter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<LetterInfo> letterInfos = new HashSet<>();
 
     public List<Info> getInfos() {
         return letterInfos.stream()
