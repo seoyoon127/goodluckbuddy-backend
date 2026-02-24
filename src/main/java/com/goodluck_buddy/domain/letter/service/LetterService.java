@@ -170,7 +170,7 @@ public class LetterService {
         Long userId = findUserIdByAccessToken(accessToken);
         Letter letter = letterRepository.findById(letterId)
                 .orElseThrow(() -> new LetterException(LetterErrorCode.LETTER_NOT_FOUND));
-        if (userId.equals(letter.getWriterId())) {
+        if (!userId.equals(letter.getWriterId())) {
             throw new LetterException(LetterErrorCode.INVALID_WRITER);
         }
         letterRepository.delete(letter);
