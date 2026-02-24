@@ -2,7 +2,6 @@ package com.goodluck_buddy.domain.letter.entity.mapping;
 
 import com.goodluck_buddy.domain.letter.entity.Info;
 import com.goodluck_buddy.domain.letter.entity.Letter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +13,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Tag(name = "letter_info")
+@Table(
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"letter_id", "info_id"})
+        }
+)
 public class LetterInfo {
 
     @Id
