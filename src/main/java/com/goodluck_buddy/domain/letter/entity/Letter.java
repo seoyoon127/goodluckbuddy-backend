@@ -81,6 +81,8 @@ public class Letter extends BaseEntity {
     }
 
     public void updateInfos(List<Info> infos) {
+        this.letterInfos.forEach(LetterInfo::disconnect);
+        this.letterInfos.clear();
         this.letterInfos.clear();
         for (Info info : infos) {
             this.letterInfos.add(

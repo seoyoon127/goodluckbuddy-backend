@@ -37,6 +37,10 @@ public class LetterInfo {
         this.info = info;
     }
 
+    public void disconnect() {
+        this.letter = null;
+    }
+
     public static LetterInfo of(Letter letter, Info info) {
         return new LetterInfo(letter, info);
     }
