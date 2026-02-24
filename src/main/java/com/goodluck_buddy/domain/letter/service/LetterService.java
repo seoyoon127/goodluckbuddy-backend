@@ -89,7 +89,10 @@ public class LetterService {
             case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
             case LIKE -> Sort.by(Sort.Direction.DESC, "likeCount");
         };
-        List<Letter> letters = letterRepository.findAllByFiltersWithLike(category, id, sort);
+
+        Category filterCategory =
+                (category == Category.ALL) ? null : category;
+        List<Letter> letters = letterRepository.findAllByFiltersWithLike(filterCategory, id, sort);
         return letters.stream()
                 .map(letter -> {
                     User writer = userRepository.findById(letter.getWriterId())
