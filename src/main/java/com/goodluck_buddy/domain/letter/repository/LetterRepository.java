@@ -24,6 +24,7 @@ public interface LetterRepository extends JpaRepository<Letter, Long> {
 
     @Query("""
             SELECT l from Letter l
+            LEFT JOIN l.categories c
             WHERE (:category IS NULL or l.categories.category = :category)
             AND EXISTS (
                  SELECT 1 FROM Like lk
