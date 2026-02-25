@@ -17,6 +17,7 @@ public class ReplyResDto {
         private LocalDate createdAt;
         private Long likeCount;
         private boolean like;
+        private boolean mine;
     }
 
     @Getter

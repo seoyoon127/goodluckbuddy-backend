@@ -11,7 +11,8 @@ public class ReplyConverter {
     public static ReplyResDto.Reply toReplyRes(
             Reply reply,
             String writerName,
-            boolean like
+            boolean like,
+            boolean mine
     ) {
         return ReplyResDto.Reply.builder()
                 .replyId(reply.getId())
@@ -20,6 +21,7 @@ public class ReplyConverter {
                 .createdAt(reply.getCreatedAt().toLocalDate())
                 .writerName(writerName)
                 .like(like)
+                .mine(mine)
                 .build();
     }
 
