@@ -51,11 +51,13 @@ public class ReplyService {
                     User writer = userRepository.findById(r.getUser().getId())
                             .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
                     boolean isLiked = false;
+                    boolean mine = false;
 
                     if (userF != null) {
                         isLiked = replyLikeRepository.existsByUserAndReply(userF, r);
+                        mine = userF.getId() == r.getUser().getId();
                     }
-                    return ReplyConverter.toReplyRes(r, writer.getNickname(), isLiked);
+                    return ReplyConverter.toReplyRes(r, writer.getNickname(), isLiked, mine);
                 }).toList();
     }
 
