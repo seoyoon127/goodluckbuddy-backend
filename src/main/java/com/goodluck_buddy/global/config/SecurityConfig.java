@@ -42,7 +42,7 @@ public class SecurityConfig {
             "/api/replies/letters/**",
             "/api/replies/writer/**",
             "/api/users/*/profile",
-            "api/auth/**"
+            "/api/auth/**"
     };
 
     @Bean
