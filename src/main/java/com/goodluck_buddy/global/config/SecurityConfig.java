@@ -41,7 +41,8 @@ public class SecurityConfig {
             "/api/letters/**",
             "/api/replies/letters/**",
             "/api/replies/writer/**",
-            "/api/users/*/profile"
+            "/api/users/*/profile",
+            "api/auth/**"
     };
 
     @Bean
