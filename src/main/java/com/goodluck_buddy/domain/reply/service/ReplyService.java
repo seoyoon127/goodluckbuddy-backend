@@ -48,7 +48,7 @@ public class ReplyService {
         final User userF = user;
         return letter.getReplies().stream()
                 .map(r -> {
-                    User writer = userRepository.findById(letter.getWriterId())
+                    User writer = userRepository.findById(r.getUser().getId())
                             .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
                     boolean isLiked = false;
 
