@@ -12,7 +12,8 @@ public class ReplyConverter {
             Reply reply,
             String writerName,
             boolean like,
-            boolean mine
+            boolean mine,
+            Long writerId
     ) {
         return ReplyResDto.Reply.builder()
                 .replyId(reply.getId())
@@ -22,6 +23,7 @@ public class ReplyConverter {
                 .writerName(writerName)
                 .like(like)
                 .mine(mine)
+                .writerId(writerId)
                 .build();
     }
 
@@ -40,7 +42,8 @@ public class ReplyConverter {
 
     public static ReplyResDto.ReplyPreview toReplyPreviewRes(
             Reply reply,
-            String writerName
+            String writerName,
+            Long writerId
     ) {
         return ReplyResDto.ReplyPreview.builder()
                 .replyId(reply.getId())
@@ -51,6 +54,7 @@ public class ReplyConverter {
                 .writerName(writerName)
                 .likeCount(reply.getLikeCount())
                 .letterTitle(reply.getLetter().getTitle())
+                .writerId(writerId)
                 .build();
     }
 }

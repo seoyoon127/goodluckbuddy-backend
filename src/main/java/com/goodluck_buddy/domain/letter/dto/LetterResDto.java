@@ -19,6 +19,7 @@ public class LetterResDto {
         private Long likeCount;
         private LocalDate createdAt;
         private Category category;
+        private Long writerId;
     }
 
     @Getter
@@ -26,6 +27,7 @@ public class LetterResDto {
     public static class RecommendLetter {
         private String phrase;
         private List<LetterResDto.Letter> letters;
+        private Long writerId;
     }
 
     @Getter
@@ -42,5 +44,6 @@ public class LetterResDto {
         private List<String> infos;
         private boolean mine;
         private boolean like;
+        private Long writerId;
     }
 }

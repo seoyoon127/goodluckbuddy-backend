@@ -57,7 +57,7 @@ public class ReplyService {
                         isLiked = replyLikeRepository.existsByUserAndReply(userF, r);
                         mine = userF.getId() == r.getUser().getId();
                     }
-                    return ReplyConverter.toReplyRes(r, writer.getNickname(), isLiked, mine);
+                    return ReplyConverter.toReplyRes(r, writer.getNickname(), isLiked, mine, writer.getId());
                 }).toList();
     }
 
@@ -100,7 +100,7 @@ public class ReplyService {
                 .map(r -> {
                     User writer = userRepository.findById(userId)
                             .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-                    return ReplyConverter.toReplyPreviewRes(r, writer.getNickname());
+                    return ReplyConverter.toReplyPreviewRes(r, writer.getNickname(), writer.getId());
                 }).toList();
     }
 
