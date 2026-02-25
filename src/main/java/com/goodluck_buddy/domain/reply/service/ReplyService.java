@@ -93,7 +93,9 @@ public class ReplyService {
             case LATEST -> Sort.by(Sort.Direction.DESC, "createdAt");
             case LIKE -> Sort.by(Sort.Direction.DESC, "likeCount");
         };
-        List<Reply> replies = replyRepository.findAllByFilters(category, userId, sort);
+        Category filterCategory =
+                (category == Category.ALL) ? null : category;
+        List<Reply> replies = replyRepository.findAllByFilters(filterCategory, userId, sort);
         return replies.stream()
                 .map(r -> {
                     User writer = userRepository.findById(userId)
