@@ -43,4 +43,12 @@ public class UserController implements UserControllerDocs {
         userService.withdraw(accessToken);
         return ApiResponse.onSuccess(UserSuccessCode.WITHDRAW_OK, null);
     }
+
+    @GetMapping("/{id}/profile")
+    public ApiResponse<UserResDto.Profile> getMyProfile(
+            @PathVariable Long id
+    ) {
+        UserResDto.Profile profile = userService.getUserProfile(id);
+        return ApiResponse.onSuccess(UserSuccessCode.PROFILE_GET_OK, profile);
+    }
 }
