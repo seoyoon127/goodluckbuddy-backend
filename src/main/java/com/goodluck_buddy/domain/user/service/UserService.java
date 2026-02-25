@@ -67,6 +67,12 @@ public class UserService {
         userRepository.withdraw(userId, Status.INACTIVATE, "");
     }
 
+    public UserResDto.Profile getUserProfile(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
+        return UserConverter.toMyProfile(user);
+    }
+
     private Long findUserIdByAccessToken(String accessToken) {
         String token = accessToken.split(" ")[1];
         return Long.parseLong(jwtUtil.getId(token));

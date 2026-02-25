@@ -5,6 +5,7 @@ import com.goodluck_buddy.domain.user.dto.UserResDto;
 import com.goodluck_buddy.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
@@ -33,4 +34,12 @@ public interface UserControllerDocs {
             description = "해당 계정을 비활성화 시킵니다."
     )
     ApiResponse<Void> withdraw(@RequestHeader("Authorization") String accessToken);
+
+    @Operation(
+            summary = "타인 프로필 조회",
+            description = "타인 회원 정보를 조회합니다."
+    )
+    ApiResponse<UserResDto.Profile> getMyProfile(
+            @PathVariable Long id
+    );
 }
