@@ -18,6 +18,7 @@ public class ReplyResDto {
         private Long likeCount;
         private boolean like;
         private boolean mine;
+        private Long writerId;
     }
 
     @Getter
@@ -31,5 +32,6 @@ public class ReplyResDto {
         private LocalDate createdAt;
         private Long likeCount;
         private Category letterParentCategory;
+        private Long writerId;
     }
 }

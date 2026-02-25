@@ -76,7 +76,7 @@ public class LetterService {
                 .map(letter -> {
                     User writer = userRepository.findById(letter.getWriterId())
                             .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-                    return LetterConverter.toLetterRes(letter, writer.getNickname());
+                    return LetterConverter.toLetterRes(letter, writer.getNickname(), writer.getId());
                 })
                 .toList();
     }
@@ -97,7 +97,7 @@ public class LetterService {
                 .map(letter -> {
                     User writer = userRepository.findById(letter.getWriterId())
                             .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-                    return LetterConverter.toLetterRes(letter, writer.getNickname());
+                    return LetterConverter.toLetterRes(letter, writer.getNickname(), writer.getId());
                 })
                 .toList();
     }
@@ -109,7 +109,7 @@ public class LetterService {
                 .map(letter -> {
                     User writer = userRepository.findById(letter.getWriterId())
                             .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
-                    return LetterConverter.toLetterRes(letter, writer.getNickname());
+                    return LetterConverter.toLetterRes(letter, writer.getNickname(), writer.getId());
                 })
                 .toList();
 
@@ -131,7 +131,7 @@ public class LetterService {
         final boolean isLiked = like;
         boolean isMine = userId != null && userId.equals(writer.getId());
         List<Info> infos = letter.getInfos();
-        return LetterConverter.toLetterDetailRes(letter, writer.getNickname(), infos, isMine, isLiked);
+        return LetterConverter.toLetterDetailRes(letter, writer.getNickname(), infos, isMine, isLiked, writer.getId());
     }
 
     @Transactional
