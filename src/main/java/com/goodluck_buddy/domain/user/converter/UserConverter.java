@@ -25,6 +25,7 @@ public class UserConverter {
                 .gender(user.getGender())
                 .birth(user.getBirth())
                 .category(user.getInterestCategory())
+                .id(user.getId())
                 .build();
     }
 }
