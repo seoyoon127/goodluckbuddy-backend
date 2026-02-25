@@ -16,5 +16,6 @@ public class UserResDto {
         private Gender gender;
         private LocalDate birth;
         private Category category;
+        private Long id;
     }
 }
