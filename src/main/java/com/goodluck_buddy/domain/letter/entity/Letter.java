@@ -80,14 +80,21 @@ public class Letter extends BaseEntity {
         this.categories = categories;
     }
 
-    public void updateInfos(List<Info> infos) {
-        this.letterInfos.forEach(LetterInfo::disconnect);
-        this.letterInfos.clear();
-        this.letterInfos.clear();
-        for (Info info : infos) {
-            this.letterInfos.add(
-                    LetterInfo.of(this, info)
-            );
+    public void updateInfos(List<Info> newInfos) {
+        // 기존 제거
+        this.letterInfos.removeIf(letterInfo ->
+                !newInfos.contains(letterInfo.getInfo())
+        );
+
+        // 신규 추가
+        for (Info info : newInfos) {
+
+            boolean exists = this.letterInfos.stream()
+                    .anyMatch(li -> li.getInfo().equals(info));
+
+            if (!exists) {
+                this.letterInfos.add(LetterInfo.of(this, info));
+            }
         }
     }
 
