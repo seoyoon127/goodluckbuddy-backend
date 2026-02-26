@@ -60,7 +60,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(auth);
         } catch (ExpiredJwtException e) {
             SecurityContextHolder.clearContext();
-            filterChain.doFilter(request, response);
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json;charset=UTF-8");
+
+            response.getWriter().write("""
+                        {
+                            "isSuccess": false,
+                            "code": "AUTH401_2",
+                            "message": "만료된 토큰입니다.",
+                            "result": null
+                        }
+                    """);
+
             return;
         } catch (JwtException e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
