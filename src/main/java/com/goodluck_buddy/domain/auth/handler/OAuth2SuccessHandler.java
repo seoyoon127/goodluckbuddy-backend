@@ -33,19 +33,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
 
         TokenDto.Tokens tokenDto = tokenService.issueTokens(user);
-        System.out.println("=======SuccessHandler=======");
-        System.out.println("refreshToken:" + tokenDto.getRefreshToken());
-        System.out.println("accessToken:" + tokenDto.getAccessToken());
         CookieUtil.addCookie(response, "refreshToken", tokenDto.getRefreshToken());
 
         String redirectUri = (String) request.getSession().getAttribute("redirect_uri");
 
         if (redirectUri != null && !redirectUri.equals("/")) {
-            response.sendRedirect("http://localhost:5173" + redirectUri + "?token=" + tokenDto.getAccessToken());
+            response.sendRedirect("https://goodluckbuddy-frontend.vercel.app" + redirectUri + "?token=" + tokenDto.getAccessToken());
         } else if (principal.isNew()) {
-            response.sendRedirect("http://localhost:5173/signup?token=" + tokenDto.getAccessToken());
+            response.sendRedirect("https://goodluckbuddy-frontend.vercel.app/signup?token=" + tokenDto.getAccessToken());
         } else {
-            response.sendRedirect("http://localhost:5173/home?token=" + tokenDto.getAccessToken());
+            response.sendRedirect("https://goodluckbuddy-frontend.vercel.app/home?token=" + tokenDto.getAccessToken());
         }
     }
 }
