@@ -64,7 +64,8 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.NOT_FOUND));
         user.updateNickname("탈퇴한 사용자");
-        userRepository.withdraw(userId, Status.INACTIVATE, "");
+        String deletedProviderId = "deleted-" + userId;
+        userRepository.withdraw(userId, Status.INACTIVATE, deletedProviderId);
     }
 
     public UserResDto.Profile getUserProfile(Long id) {
