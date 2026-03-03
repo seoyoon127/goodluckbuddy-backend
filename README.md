@@ -48,3 +48,6 @@
 ## ⚙️ 백엔드 주요 기술
 - JWT 기반 인증
 - OAuth 2.0 소셜 로그인
+
+## 📽️실행 영상
+https://youtu.be/_3zkH7rNbTQ
